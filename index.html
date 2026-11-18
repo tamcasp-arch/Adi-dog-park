@@ -52,8 +52,8 @@
             </div>
             
             <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-                <a href="#about" class="hover:text-orange-600 transition-colors">מה בקבוצה?</a>
-                <a href="#poll" class="hover:text-orange-600 transition-colors">מגיעים היום?</a>
+                <a href="#live-status" class="hover:text-orange-600 transition-colors font-semibold text-emerald-700">מי בגינה עכשיו?</a>
+                <a href="#poll" class="hover:text-orange-600 transition-colors">לוח שיבוצים</a>
                 <a href="#rules" class="hover:text-orange-600 transition-colors">כללי הגינה</a>
             </nav>
 
@@ -64,105 +64,105 @@
         </div>
     </header>
 
-    <!-- אזור פתיחה ראשי (Hero Section) -->
-    <section class="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-24 px-4 sm:px-6">
-        <!-- אלמנטים דקורטיביים ברקע -->
-        <div class="absolute top-10 right-10 w-64 h-64 bg-amber-200/40 rounded-full blur-3xl -z-10"></div>
-        <div class="absolute bottom-10 left-10 w-72 h-72 bg-emerald-200/40 rounded-full blur-3xl -z-10"></div>
-
-        <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <!-- טקסט וכפתורי הנעה לפעולה -->
-            <div class="lg:col-span-7 text-center lg:text-right space-y-6">
-                <div class="inline-flex items-center gap-2 bg-emerald-100/80 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-semibold border border-emerald-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>הקהילה של בעלי הכלבים בעדי</span>
-                </div>
-                
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight">
-                    קהילת <span class="text-transparent bg-clip-text bg-gradient-to-l from-orange-500 to-amber-600">הולכי על ארבע</span> בעדי
-                </h1>
-                
-                <p class="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                    רוצים שהכלב שלכם יפגוש חברים חדשים בגינת הכלבים? הצטרפו לקבוצת הווטסאפ השכונתית שלנו! המקום לתאם שעות הגעה, לשתף עדכונים על הגינה, ולהכיר את השכנים על שתיים ועל ארבע.
-                </p>
-
-                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                    <button onclick="openJoinModal()" class="w-full sm:w-auto bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all flex items-center justify-center gap-3 active:scale-95">
-                        <i class="ph-fill ph-whatsapp-logo text-2xl"></i>
-                        <span>להצטרפות לקבוצת הווטסאפ</span>
-                    </button>
-                    
-                    <button onclick="copyInviteLink()" class="w-full sm:w-auto bg-white hover:bg-amber-50 text-slate-700 font-semibold text-base px-6 py-4 rounded-2xl border border-slate-200 shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95">
-                        <i class="ph ph-share-network text-xl text-orange-500"></i>
-                        <span>שיתוף קישור לשכנים</span>
-                    </button>
-                </div>
-
-                <!-- נתון קהילתי קטן -->
-                <div class="pt-4 flex items-center justify-center lg:justify-start gap-4 text-sm text-slate-500">
-                    <div class="flex -space-x-2 space-x-reverse">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 border-2 border-white flex items-center justify-center text-base">🐕</div>
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-base">🐩</div>
-                        <div class="w-8 h-8 rounded-full bg-orange-100 border-2 border-white flex items-center justify-center text-base">🦮</div>
-                        <div class="w-8 h-8 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center text-base">🐾</div>
-                    </div>
-                    <span>מעל <strong>85 משפחות וכלבים</strong> מעדי כבר בפנים!</span>
-                </div>
-            </div>
-
-            <!-- כרטיס ויזואלי / איור קהילתי -->
-            <div class="lg:col-span-5">
-                <div class="relative bg-white p-4 sm:p-6 rounded-3xl shadow-xl border border-amber-100 rotate-1 hover:rotate-0 transition-transform duration-300">
-                    <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-emerald-50 relative mb-4">
-                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" 
-                             onerror="this.src='https://placehold.co/800x600/E8F5E9/2E7D32?text=גינת+הכלבים+בעדי+🐾'"
-                             alt="כלבים משחקים יחד בגינה" 
-                             class="w-full h-full object-cover">
-                        <div class="absolute bottom-3 right-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl shadow text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                            <span class="text-orange-500">📍</span> גינת הכלבים, עדי
+    <!-- טבלת מצב בזמן אמת בראש העמוד: מי בגינה עכשיו ומי בחלון הבא? -->
+    <section id="live-status" class="pt-6 pb-4 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-lg border border-emerald-100 overflow-hidden">
+                <!-- סרגל עליון של הטבלה החיה -->
+                <div class="bg-gradient-to-l from-emerald-800 to-teal-900 text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center text-2xl shrink-0">
+                            🐕
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-lg sm:text-xl font-bold">מי בגינה עכשיו ומי בחלון הבא?</h2>
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    LIVE
+                                </span>
+                            </div>
+                            <p class="text-xs text-emerald-100/90 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <span>🕒 השעה כעת: <strong id="live-clock" class="font-mono text-amber-300" dir="ltr">--:--:--</strong></span>
+                                <span>•</span>
+                                <span id="last-sync-label">מעודכן לעכשיו</span>
+                            </p>
                         </div>
                     </div>
-                    
-                    <!-- הדמיית הודעת ווטסאפ מהקבוצה -->
-                    <div class="bg-[#E7FFDB] p-3.5 rounded-2xl rounded-tr-none border border-emerald-200/70 shadow-sm space-y-1">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-emerald-800">דנה (אמא של לואי 🐕)</span>
-                            <span class="text-slate-400">17:15</span>
-                        </div>
-                        <p class="text-sm text-slate-800">
-                            היי כולם! אנחנו יורדים לגינה בעוד 10 דקות עם כדור טניס, מי מצטרף? 🎾🐾
-                        </p>
+
+                    <div class="flex items-center gap-2 self-end sm:self-center">
+                        <button onclick="loadBookings(true)" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-3.5 py-2 rounded-xl border border-white/20 transition-all flex items-center gap-1.5 active:scale-95">
+                            <i id="live-refresh-icon" class="ph-bold ph-arrows-clockwise"></i>
+                            <span>רענן נתונים עכשיו</span>
+                        </button>
                     </div>
+                </div>
+
+                <!-- כרטיסיות סיכום מהיר לחלון נוכחי ולחלון הבא -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-slate-100 bg-slate-50/70 border-b border-slate-100">
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                            <div>
+                                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wide block">בגינה כרגע (חלון נוכחי)</span>
+                                <span id="current-slot-badge" class="text-base font-extrabold text-slate-900" dir="ltr">--:-- - --:--</span>
+                            </div>
+                        </div>
+                        <button id="quick-join-current-btn" onclick="quickBookCurrentOrNext('current')" class="text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl transition-colors">
+                            + הצטרפות לסבב
+                        </button>
+                    </div>
+
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-orange-500 shrink-0"></span>
+                            <div>
+                                <span class="text-[11px] font-bold text-orange-700 uppercase tracking-wide block">הסבב הבא (חלון קרוב)</span>
+                                <span id="next-slot-badge" class="text-base font-extrabold text-slate-900" dir="ltr">--:-- - --:--</span>
+                            </div>
+                        </div>
+                        <button id="quick-join-next-btn" onclick="quickBookCurrentOrNext('next')" class="text-xs font-bold bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded-xl transition-colors">
+                            + שריון הבא
+                        </button>
+                    </div>
+                </div>
+
+                <!-- טבלת נוכחות בזמן אמת -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+                                <th class="py-3 px-4">סטטוס וחלון זמן</th>
+                                <th class="py-3 px-4">שם הכלב/ה ואופי</th>
+                                <th class="py-3 px-4">בעלים</th>
+                                <th class="py-3 px-4">הערות / לא מסתדר עם</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-status-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- שורות הטבלה ירונדרו כאן בזמן אמת -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- הודעת שגיאה מפורטת במקרה של בעיית חיבור ל-Google Sheets -->
+                <div id="sheets-error-box" class="hidden p-4 bg-red-50 border-t border-red-200 text-red-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-2.5">
+                        <i class="ph-fill ph-warning-circle text-red-600 text-xl shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm text-red-800">שגיאה בטעינת הנתונים מ-Google Sheets</strong>
+                            <span id="sheets-error-detail" class="text-red-700">לא הצלחנו למשוך נתונים מהגיליון. ודאו שפריסת ה-Apps Script מוגדרת כ-"Anyone".</span>
+                        </div>
+                    </div>
+                    <button onclick="openScriptModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-xl shrink-0 transition-colors">
+                        בדיקת קוד והגדרות
+                    </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- כרטיסיות מידע: מה קורה בקבוצה? -->
-    <section id="about" class="py-14 px-4 sm:px-6 bg-white border-y border-amber-100">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <h2 class="text-3xl font-bold text-slate-900 mb-3">מה מחכה לכם בקבוצה?</h2>
-                <p class="text-slate-600">קבוצה עניינית, נעימה וללא חפירות מיותרות – נטו לטובת הכלבים והקהילה שלנו ביישוב.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- כרטיסייה 1 -->
-                <div class="bg-brand-cream p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
-                    <div class="w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-5 text-3xl">
-                        <i class="ph-duotone ph-clock-afternoon"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">תיאום שעות הגעה</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">
-                        כדי שהכלב לא יגיע לגינה ריקה – שולחים הודעה קצרה לפני שיוצאים, מתאמים מפגשי משחק לפי גודל ואופי הכלבים, ונהנים מזמן איכות.
-                    </p>
-                </div>
-
-                <!-- כרטיסייה 2 -->
-                <div class="bg-brand-cream p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-5 text-3xl">
-                        <i class="ph-duotone ph-users-three"></i>
-                    </div>
+    <!-- אזור פתיחה ראשי (Hero Section) -->
+    <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24 px-4 sm:px-6">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">היכרות וקהילתיות</h3>
                     <p class="text-slate-600 text-sm leading-relaxed">
                         הזדמנות מעולה להכיר שכנים חדשים מעדי שאוהבים בעלי חיים, להתייעץ לגבי וטרינרים באזור, פנסיונים, או עזרה הדדית כשנוסעים לחופשה.
@@ -239,7 +239,7 @@
                         <div id="sheets-status-banner" class="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                             <div class="flex items-center gap-2 text-amber-900">
                                 <i class="ph-fill ph-info text-amber-600 text-base shrink-0"></i>
-                                <span><strong>מצב תצוגה מקדימה:</strong> חבר את קישור ה-Google Apps Script בקוד לסנכרון מלא עם Google Sheets.</span>
+                                <span><strong>מצב הדגמה מקומי:</strong> הדבק את קישור ה-Web App במשתנה <code class="font-mono bg-amber-100 px-1 rounded">GOOGLE_SCRIPT_URL</code> לסנכרון חי.</span>
                             </div>
                             <button onclick="openScriptModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-lg shrink-0 transition-colors flex items-center justify-center gap-1.5">
                                 <i class="ph-bold ph-code"></i>
@@ -463,18 +463,21 @@
                     <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = sheet.getDataRange().getValues();
-  var today = new Date().toISOString().slice(0, 10);
+  var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
   var bookings = [];
   
-  for (var i = 1; i < data.length; i++) {
-    if (data[i][0] === today) {
+  for (var i = 1; i &lt; data.length; i++) {
+    var rowDate = data[i][0] instanceof Date 
+      ? Utilities.formatDate(data[i][0], "Asia/Jerusalem", "yyyy-MM-dd") 
+      : String(data[i][0]).trim();
+    if (rowDate === today) {
       bookings.push({
-        id: data[i][1],
-        slot: data[i][2],
-        dogName: data[i][3],
-        ownerName: data[i][4],
-        temperament: data[i][5],
-        incompatibleWith: data[i][6] ? data[i][6].toString().split(',').map(function(s){ return s.trim(); }).filter(Boolean) : []
+        id: String(data[i][1] || ''),
+        slot: String(data[i][2] || '').trim(),
+        dogName: String(data[i][3] || '').trim(),
+        ownerName: String(data[i][4] || '').trim(),
+        temperament: String(data[i][5] || '').trim(),
+        incompatibleWith: data[i][6] ? String(data[i][6]).split(',').map(function(s){ return s.trim(); }).filter(Boolean) : []
       });
     }
   }
@@ -488,7 +491,7 @@ function doPost(e) {
     sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
   }
   var payload = JSON.parse(e.postData.contents);
-  var today = new Date().toISOString().slice(0, 10);
+  var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
   
   sheet.appendRow([
     today,
@@ -525,7 +528,7 @@ function doPost(e) {
                     הקישור מוכן עבורכם. לחצו על הכפתור הירוק למעבר ישיר לקבוצת <strong>"קהילת הולכי על ארבע בעדי"</strong> בווטסאפ, או העתיקו את הקישור לשיתוף.
                 </p>
 
-                <!-- שדה קישור דמה להעתקה -->
+                <!-- שדה קישור להעתקה -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between gap-2 text-left" dir="ltr">
                     <span id="invite-link-text" class="text-xs text-slate-600 font-mono truncate px-2">https://chat.whatsapp.com/AdiDogsCommunity2026</span>
                     <button onclick="copyInviteLink()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-colors flex items-center gap-1" dir="rtl">
@@ -535,7 +538,7 @@ function doPost(e) {
                 </div>
 
                 <div class="pt-2 space-y-2.5">
-                    <a href="https://chat.whatsapp.com/AdiDogsCommunity2026" target="_blank" rel="noopener noreferrer" onclick="handleWhatsAppRedirect(event)" class="w-full bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    <a id="whatsapp-direct-link" href="https://chat.whatsapp.com/AdiDogsCommunity2026" target="_blank" rel="noopener noreferrer" onclick="handleWhatsAppRedirect(event)" class="w-full bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                         <i class="ph-fill ph-whatsapp-logo text-xl"></i>
                         <span>פתיחת קבוצת הווטסאפ</span>
                     </a>
@@ -556,83 +559,148 @@ function doPost(e) {
     <!-- לוגיקת JavaScript לאינטראקטיביות -->
     <script>
         // =========================================================================
-        // הגדרת חיבור ל-Google Sheets:
-        // הדבק כאן את כתובת ה-Web App שקיבלת מ-Google Apps Script כדי להפעיל סנכרון חי
+        // הגדרות חיבור מרכזיות:
+        // 1. הדבק כאן את כתובת ה-Web App מ-Google Apps Script לסנכרון חי
+        // 2. הדבק כאן את קישור ההזמנה האמיתי של קבוצת הווטסאפ של גינת כלבים עדי
         // =========================================================================
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUiOZLAlCXdupZgEIfK46GOgM3usceP5nMHWpXhPbVv5ljd0-TWwfIBt75vmqYAZvI/exec";
+        const GOOGLE_SCRIPT_URL = "";
+        const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/AdiDogsCommunity2026";
 
         // הגדרת חלונות זמן של חצי שעה (מקסימום 30 דקות למפגש)
         const TIME_SLOTS = [
             // בוקר
-            { id: '06:30-07:00', label: '06:30 - 07:00', period: 'morning' },
-            { id: '07:00-07:30', label: '07:00 - 07:30', period: 'morning' },
-            { id: '07:30-08:00', label: '07:30 - 08:00', period: 'morning' },
-            { id: '08:00-08:30', label: '08:00 - 08:30', period: 'morning' },
-            { id: '08:30-09:00', label: '08:30 - 09:00', period: 'morning' },
-            { id: '09:00-09:30', label: '09:00 - 09:30', period: 'morning' },
-            { id: '09:30-10:00', label: '09:30 - 10:00', period: 'morning' },
-            { id: '10:00-10:30', label: '10:00 - 10:30', period: 'morning' },
-            { id: '10:30-11:00', label: '10:30 - 11:00', period: 'morning' },
+            { id: '06:30-07:00', label: '06:30 - 07:00', period: 'morning', startMin: 6 * 60 + 30, endMin: 7 * 60 },
+            { id: '07:00-07:30', label: '07:00 - 07:30', period: 'morning', startMin: 7 * 60, endMin: 7 * 60 + 30 },
+            { id: '07:30-08:00', label: '07:30 - 08:00', period: 'morning', startMin: 7 * 60 + 30, endMin: 8 * 60 },
+            { id: '08:00-08:30', label: '08:00 - 08:30', period: 'morning', startMin: 8 * 60, endMin: 8 * 60 + 30 },
+            { id: '08:30-09:00', label: '08:30 - 09:00', period: 'morning', startMin: 8 * 60 + 30, endMin: 9 * 60 },
+            { id: '09:00-09:30', label: '09:00 - 09:30', period: 'morning', startMin: 9 * 60, endMin: 9 * 60 + 30 },
+            { id: '09:30-10:00', label: '09:30 - 10:00', period: 'morning', startMin: 9 * 60 + 30, endMin: 10 * 60 },
+            { id: '10:00-10:30', label: '10:00 - 10:30', period: 'morning', startMin: 10 * 60, endMin: 10 * 60 + 30 },
             // אחה"צ וערב
-            { id: '16:00-16:30', label: '16:00 - 16:30', period: 'afternoon' },
-            { id: '16:30-17:00', label: '16:30 - 17:00', period: 'afternoon' },
-            { id: '17:00-17:30', label: '17:00 - 17:30', period: 'afternoon' },
-            { id: '17:30-18:00', label: '17:30 - 18:00', period: 'afternoon' },
-            { id: '18:00-18:30', label: '18:00 - 18:30', period: 'afternoon' },
-            { id: '18:30-19:00', label: '18:30 - 19:00', period: 'afternoon' },
-            { id: '19:00-19:30', label: '19:00 - 19:30', period: 'afternoon' },
-            { id: '19:30-20:00', label: '19:30 - 20:00', period: 'afternoon' },
-            { id: '20:00-20:30', label: '20:00 - 20:30', period: 'afternoon' },
-            { id: '20:30-21:00', label: '20:30 - 21:00', period: 'afternoon' },
-            { id: '21:00-21:30', label: '21:00 - 21:30', period: 'afternoon' }
-        ];
-
-        // נתוני דמה ראשוניים למצב תצוגה מקדימה (כאשר GOOGLE_SCRIPT_URL ריק)
-        const DEFAULT_DEMO_BOOKINGS = [
-            {
-                id: 'demo-1',
-                slot: '07:30-08:00',
-                dogName: 'לואי',
-                ownerName: 'דנה',
-                temperament: 'ידידותי לכולם 🐾',
-                incompatibleWith: []
-            },
-            {
-                id: 'demo-2',
-                slot: '17:00-17:30',
-                dogName: 'רקס',
-                ownerName: 'עומר',
-                temperament: 'אנרגטי מאוד ⚡',
-                incompatibleWith: ['סימבה', 'טופי']
-            },
-            {
-                id: 'demo-3',
-                slot: '17:00-17:30',
-                dogName: 'לונה',
-                ownerName: 'מיכל',
-                temperament: 'ידידותי לכולם 🐾',
-                incompatibleWith: []
-            },
-            {
-                id: 'demo-4',
-                slot: '18:00-18:30',
-                dogName: 'טופי',
-                ownerName: 'נועה',
-                temperament: 'חששן / צריך מרחב 🌿',
-                incompatibleWith: ['רקס']
-            }
+            { id: '16:00-16:30', label: '16:00 - 16:30', period: 'afternoon', startMin: 16 * 60, endMin: 16 * 60 + 30 },
+            { id: '16:30-17:00', label: '16:30 - 17:00', period: 'afternoon', startMin: 16 * 60 + 30, endMin: 17 * 60 },
+            { id: '17:00-17:30', label: '17:00 - 17:30', period: 'afternoon', startMin: 17 * 60, endMin: 17 * 60 + 30 },
+            { id: '17:30-18:00', label: '17:30 - 18:00', period: 'afternoon', startMin: 17 * 60 + 30, endMin: 18 * 60 },
+            { id: '18:00-18:30', label: '18:00 - 18:30', period: 'afternoon', startMin: 18 * 60, endMin: 18 * 60 + 30 },
+            { id: '18:30-19:00', label: '18:30 - 19:00', period: 'afternoon', startMin: 18 * 60 + 30, endMin: 19 * 60 },
+            { id: '19:00-19:30', label: '19:00 - 19:30', period: 'afternoon', startMin: 19 * 60, endMin: 19 * 60 + 30 },
+            { id: '19:30-20:00', label: '19:30 - 20:00', period: 'afternoon', startMin: 19 * 60 + 30, endMin: 20 * 60 },
+            { id: '20:00-20:30', label: '20:00 - 20:30', period: 'afternoon', startMin: 20 * 60, endMin: 20 * 60 + 30 },
+            { id: '20:30-21:00', label: '20:30 - 21:00', period: 'afternoon', startMin: 20 * 60 + 30, endMin: 21 * 60 },
+            { id: '21:00-21:30', label: '21:00 - 21:30', period: 'afternoon', startMin: 21 * 60, endMin: 21 * 60 + 30 },
+            { id: '21:30-22:00', label: '21:30 - 22:00', period: 'afternoon', startMin: 21 * 60 + 30, endMin: 22 * 60 }
         ];
 
         let bookings = [];
-        let activePeriodFilter = 'afternoon'; // ברירת מחדל: אחה"צ וערב
+        let activePeriodFilter = 'afternoon';
+        let currentActiveSlotId = null;
+        let nextUpcomingSlotId = null;
+
+        // חישוב חלון הזמן הנוכחי והבא לפי השעון המקומי
+        function getCurrentAndNextSlots() {
+            const now = new Date();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+            let currentSlot = TIME_SLOTS.find(s => nowMinutes >= s.startMin && nowMinutes < s.endMin) || null;
+            let nextSlot = null;
+
+            if (currentSlot) {
+                const idx = TIME_SLOTS.findIndex(s => s.id === currentSlot.id);
+                nextSlot = TIME_SLOTS[idx + 1] || TIME_SLOTS[0];
+            } else {
+                nextSlot = TIME_SLOTS.find(s => s.startMin > nowMinutes) || TIME_SLOTS[0];
+            }
+
+            return { currentSlot, nextSlot };
+        }
+
+        // יצירת נתוני דמה חכמים המותאמים לשעה הנוכחית (למצב תצוגה מקדימה לפני חיבור ל-Sheets)
+        function buildDynamicDemoBookings() {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            const curId = currentSlot ? currentSlot.id : '19:30-20:00';
+            const nxtId = nextSlot ? nextSlot.id : '20:00-20:30';
+
+            return [
+                {
+                    id: 'demo-1',
+                    slot: curId,
+                    dogName: 'לואי',
+                    ownerName: 'דנה',
+                    temperament: 'ידידותי לכולם 🐾',
+                    incompatibleWith: []
+                },
+                {
+                    id: 'demo-2',
+                    slot: curId,
+                    dogName: 'רקס',
+                    ownerName: 'עומר',
+                    temperament: 'אנרגטי מאוד ⚡',
+                    incompatibleWith: ['טופי', 'סימבה']
+                },
+                {
+                    id: 'demo-3',
+                    slot: nxtId,
+                    dogName: 'טופי',
+                    ownerName: 'נועה',
+                    temperament: 'חששן / צריך מרחב 🌿',
+                    incompatibleWith: ['רקס']
+                },
+                {
+                    id: 'demo-4',
+                    slot: nxtId,
+                    dogName: 'לונה',
+                    ownerName: 'מיכל',
+                    temperament: 'קטן ועדין 🐩',
+                    incompatibleWith: []
+                }
+            ];
+        }
 
         // אתחול הדף
         document.addEventListener('DOMContentLoaded', () => {
+            // עדכון קישורי הווטסאפ מהמשתנה הראשי
+            document.getElementById('invite-link-text').textContent = WHATSAPP_GROUP_URL;
+            document.getElementById('whatsapp-direct-link').href = WHATSAPP_GROUP_URL;
+
             updateDateHeader();
             updateSheetsBanner();
-            setPeriodFilter('afternoon');
-            loadBookings();
+            startLiveClock();
+            
+            // בחירת פילטר ברירת מחדל לפי השעה ביום
+            const hour = new Date().getHours();
+            setPeriodFilter(hour < 13 ? 'morning' : 'afternoon');
+            
+            loadBookings(false);
+
+            // רענון אוטומטי ברקע כל 30 שניות מ-Google Sheets
+            setInterval(() => {
+                if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                    loadBookings(false);
+                }
+            }, 30000);
         });
+
+        // שעון חי המתעדכן כל שנייה ומזהה חילופי חלונות זמן אוטומטית
+        function startLiveClock() {
+            function tick() {
+                const now = new Date();
+                document.getElementById('live-clock').textContent = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+                const newCurId = currentSlot ? currentSlot.id : null;
+                const newNxtId = nextSlot ? nextSlot.id : null;
+
+                if (newCurId !== currentActiveSlotId || newNxtId !== nextUpcomingSlotId) {
+                    currentActiveSlotId = newCurId;
+                    nextUpcomingSlotId = newNxtId;
+                    renderLiveStatusTable();
+                    renderSlots();
+                }
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
 
         // הצגת התאריך הנוכחי בעברית
         function updateDateHeader() {
@@ -656,36 +724,183 @@ function doPost(e) {
         }
 
         // טעינת שיבוצים (מ-Google Sheets אם מוגדר, או מ-localStorage במצב הדגמה)
-        async function loadBookings() {
+        async function loadBookings(manualTrigger = false) {
             const refreshIcon = document.getElementById('refresh-icon');
-            refreshIcon.classList.add('animate-spin');
+            const liveRefreshIcon = document.getElementById('live-refresh-icon');
+            const errorBox = document.getElementById('sheets-error-box');
+
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
+            if (liveRefreshIcon) liveRefreshIcon.classList.add('animate-spin');
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const response = await fetch(GOOGLE_SCRIPT_URL);
+                    const cacheBusterUrl = GOOGLE_SCRIPT_URL + (GOOGLE_SCRIPT_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+                    const response = await fetch(cacheBusterUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
                     const data = await response.json();
                     if (data.status === 'success' && Array.isArray(data.bookings)) {
                         bookings = data.bookings;
+                        errorBox.classList.add('hidden');
+                        renderLiveStatusTable();
                         renderSlots();
+                        updateLastSyncTime();
+                        if (manualTrigger) showToast('הנתונים עודכנו בהצלחה מ-Google Sheets 🐾', 'success');
+                    } else {
+                        throw new Error('מבנה תשובה לא תקין מהסקריפט');
                     }
                 } catch (error) {
                     console.error('Error fetching from Google Sheets:', error);
-                    showToast('שגיאה בטעינת הנתונים מ-Google Sheets', 'info');
+                    errorBox.classList.remove('hidden');
+                    document.getElementById('sheets-error-detail').textContent = `פרטי שגיאה: ${error.message}. ודאו שב-Deploy נבחר "Anyone" והכתובת מסתיימת ב-/exec.`;
+                    if (manualTrigger) showToast('שגיאה בטעינת הנתונים מ-Google Sheets', 'info');
                 }
             } else {
-                // מצב הדגמה מקומי
-                const todayKey = 'adi_dogs_bookings_' + new Date().toISOString().slice(0, 10);
+                // מצב הדגמה מקומי חכם המותאם לשעה הנוכחית
+                const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
                 const saved = localStorage.getItem(todayKey);
                 if (saved) {
                     bookings = JSON.parse(saved);
                 } else {
-                    bookings = [...DEFAULT_DEMO_BOOKINGS];
+                    bookings = buildDynamicDemoBookings();
                     localStorage.setItem(todayKey, JSON.stringify(bookings));
                 }
+                renderLiveStatusTable();
                 renderSlots();
+                updateLastSyncTime();
+                if (manualTrigger) showToast('הנתונים רועננו (מצב תצוגה מקדימה) 🐾', 'success');
             }
 
-            setTimeout(() => refreshIcon.classList.remove('animate-spin'), 400);
+            setTimeout(() => {
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+                if (liveRefreshIcon) liveRefreshIcon.classList.remove('animate-spin');
+            }, 400);
+        }
+
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('last-sync-label').textContent = `סונכרן לאחרונה ב-${timeStr}`;
+        }
+
+        // רינדור טבלת המצב בזמן אמת בראש העמוד ("מי בגינה עכשיו ומי בחלון הבא?")
+        function renderLiveStatusTable() {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            const currentBadge = document.getElementById('current-slot-badge');
+            const nextBadge = document.getElementById('next-slot-badge');
+            const quickCurBtn = document.getElementById('quick-join-current-btn');
+            const tbody = document.getElementById('live-status-tbody');
+
+            if (currentSlot) {
+                currentBadge.textContent = currentSlot.label;
+                quickCurBtn.classList.remove('hidden');
+            } else {
+                currentBadge.textContent = 'מחוץ לשעות הפעילות';
+                quickCurBtn.classList.add('hidden');
+            }
+
+            nextBadge.textContent = nextSlot ? nextSlot.label : '06:30 - 07:00';
+
+            const rows = [];
+
+            // 1. שורות עבור החלון הנוכחי ("בגינה כרגע")
+            if (currentSlot) {
+                const currentBookings = bookings.filter(b => b.slot === currentSlot.id);
+                if (currentBookings.length === 0) {
+                    rows.push(`
+                        <tr class="bg-emerald-50/30">
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    בגינה כרגע (${currentSlot.label})
+                                </span>
+                            </td>
+                            <td colspan="3" class="py-3.5 px-4 text-slate-500 text-xs">
+                                הגינה פנויה כרגע! <button onclick="openBookingModal('${currentSlot.id}')" class="text-emerald-700 font-bold underline hover:text-emerald-900 mr-1">לחצו כאן לשריין את החלון הנוכחי</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    currentBookings.forEach(b => {
+                        const incHtml = (b.incompatibleWith && b.incompatibleWith.length > 0)
+                            ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-lg"><i class="ph-fill ph-warning text-amber-600"></i> לא מסתדר עם: ${escapeHtml(b.incompatibleWith.join(', '))}</span>`
+                            : `<span class="text-xs text-slate-400">מסתדר עם כולם</span>`;
+
+                        rows.push(`
+                            <tr class="bg-emerald-50/40 hover:bg-emerald-50/80 transition-colors">
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                        בגינה כרגע (${currentSlot.label})
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900">🐶 ${escapeHtml(b.dogName)}</div>
+                                    <div class="text-xs text-slate-500">${escapeHtml(b.temperament)}</div>
+                                </td>
+                                <td class="py-3.5 px-4 font-medium text-slate-700">${escapeHtml(b.ownerName)}</td>
+                                <td class="py-3.5 px-4">${incHtml}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            }
+
+            // 2. שורות עבור החלון הבא ("הסבב הבא")
+            if (nextSlot) {
+                const nextBookings = bookings.filter(b => b.slot === nextSlot.id);
+                if (nextBookings.length === 0) {
+                    rows.push(`
+                        <tr class="bg-orange-50/20">
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                                    <i class="ph-bold ph-clock"></i>
+                                    הסבב הבא (${nextSlot.label})
+                                </span>
+                            </td>
+                            <td colspan="3" class="py-3.5 px-4 text-slate-500 text-xs">
+                                טרם נרשמו כלבים לסבב הבא. <button onclick="openBookingModal('${nextSlot.id}')" class="text-orange-700 font-bold underline hover:text-orange-900 mr-1">שריינו מקום לסבב הבא</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    nextBookings.forEach(b => {
+                        const incHtml = (b.incompatibleWith && b.incompatibleWith.length > 0)
+                            ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-lg"><i class="ph-fill ph-warning text-amber-600"></i> לא מסתדר עם: ${escapeHtml(b.incompatibleWith.join(', '))}</span>`
+                            : `<span class="text-xs text-slate-400">מסתדר עם כולם</span>`;
+
+                        rows.push(`
+                            <tr class="bg-orange-50/30 hover:bg-orange-50/70 transition-colors">
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+                                        <i class="ph-bold ph-clock"></i>
+                                        הסבב הבא (${nextSlot.label})
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900">🐾 ${escapeHtml(b.dogName)}</div>
+                                    <div class="text-xs text-slate-500">${escapeHtml(b.temperament)}</div>
+                                </td>
+                                <td class="py-3.5 px-4 font-medium text-slate-700">${escapeHtml(b.ownerName)}</td>
+                                <td class="py-3.5 px-4">${incHtml}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            }
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        // פתיחה מהירה של טופס השיבוץ מתוך כרטיסיות המצב החי
+        function quickBookCurrentOrNext(which) {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            if (which === 'current' && currentSlot) {
+                openBookingModal(currentSlot.id);
+            } else if (nextSlot) {
+                openBookingModal(nextSlot.id);
+            }
         }
 
         // סינון חלונות זמן לפי חלק היום
@@ -704,6 +919,7 @@ function doPost(e) {
         // רינדור כרטיסיות חלונות הזמן של חצי שעה
         function renderSlots() {
             const container = document.getElementById('slots-container');
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
             const filteredSlots = activePeriodFilter === 'all' 
                 ? TIME_SLOTS 
                 : TIME_SLOTS.filter(s => s.period === activePeriodFilter);
@@ -711,6 +927,18 @@ function doPost(e) {
             container.innerHTML = filteredSlots.map(slot => {
                 const slotBookings = bookings.filter(b => b.slot === slot.id);
                 const hasDogs = slotBookings.length > 0;
+                const isCurrent = currentSlot && currentSlot.id === slot.id;
+                const isNext = nextSlot && nextSlot.id === slot.id;
+
+                let statusBadge = '';
+                let cardBorder = hasDogs ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50/70 border-slate-200';
+                if (isCurrent) {
+                    statusBadge = `<span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">בגינה עכשיו</span>`;
+                    cardBorder = 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-200';
+                } else if (isNext) {
+                    statusBadge = `<span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">הסבב הבא</span>`;
+                    cardBorder = 'bg-orange-50/60 border-orange-300';
+                }
 
                 const dogsHtml = hasDogs 
                     ? `<div class="mt-2.5 flex flex-wrap gap-2">
@@ -736,17 +964,18 @@ function doPost(e) {
                     : `<p class="text-xs text-slate-400 mt-1">החלון פנוי לגמרי — היו הראשונים לשריין חצי שעה!</p>`;
 
                 return `
-                    <div class="p-3.5 rounded-2xl border ${hasDogs ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50/70 border-slate-200'} hover:border-emerald-400 transition-all">
+                    <div class="p-3.5 rounded-2xl border ${cardBorder} hover:border-emerald-400 transition-all">
                         <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="font-bold text-sm text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs" dir="ltr">
                                     ${slot.label}
                                 </span>
+                                ${statusBadge}
                                 <span class="text-xs font-semibold ${hasDogs ? 'text-emerald-700' : 'text-slate-500'}">
                                     ${hasDogs ? `${slotBookings.length} כלבים רשומים` : 'פנוי'}
                                 </span>
                             </div>
-                            <button onclick="openBookingModal('${slot.id}')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5">
+                            <button onclick="openBookingModal('${slot.id}')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0">
                                 <i class="ph-bold ph-plus"></i>
                                 <span>הצטרפות לחלון</span>
                             </button>
@@ -876,13 +1105,16 @@ function doPost(e) {
                     await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify(newBooking)
                     });
                     bookings.push(newBooking);
+                    renderLiveStatusTable();
                     renderSlots();
                     closeBookingModal();
                     showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} וסונכרן ל-Google Sheets 🐾`, 'success');
+                    // רענון אימות מול הגיליון לאחר 2 שניות
+                    setTimeout(() => loadBookings(false), 2000);
                 } catch (err) {
                     console.error('Error posting to Google Sheets:', err);
                     showToast('שגיאה בשמירה ל-Google Sheets, נסו שוב', 'info');
@@ -890,8 +1122,9 @@ function doPost(e) {
             } else {
                 // שמירה מקומית במצב הדגמה
                 bookings.push(newBooking);
-                const todayKey = 'adi_dogs_bookings_' + new Date().toISOString().slice(0, 10);
+                const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
                 localStorage.setItem(todayKey, JSON.stringify(bookings));
+                renderLiveStatusTable();
                 renderSlots();
                 closeBookingModal();
                 showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} (מצב תצוגה מקדימה) 🐾`, 'success');
@@ -953,18 +1186,22 @@ function doPost(e) {
             modal.classList.remove('flex');
         }
 
-        // טיפול בלחיצה על קישור הדמה של ווטסאפ
+        // טיפול בלחיצה על קישור הווטסאפ
         function handleWhatsAppRedirect(e) {
-            e.preventDefault();
-            closeJoinModal();
-            showToast('מעביר לקבוצת הווטסאפ של גינת הכלבים בעדי... 🐶', 'success');
+            if (WHATSAPP_GROUP_URL.includes('AdiDogsCommunity2026')) {
+                e.preventDefault();
+                closeJoinModal();
+                showToast('מעביר לקבוצת הווטסאפ (החלף את WHATSAPP_GROUP_URL בקוד לקישור האמיתי) 🐶', 'info');
+            } else {
+                closeJoinModal();
+                showToast('מעביר לקבוצת הווטסאפ של גינת הכלבים בעדי... 🐶', 'success');
+            }
         }
 
         // העתקת קישור ללוח בצורה תואמת לכל הדפדפנים
         function copyInviteLink() {
-            const linkText = 'https://chat.whatsapp.com/AdiDogsCommunity2026';
             const tempInput = document.createElement('input');
-            tempInput.value = linkText;
+            tempInput.value = WHATSAPP_GROUP_URL;
             document.body.appendChild(tempInput);
             tempInput.select();
             try {
