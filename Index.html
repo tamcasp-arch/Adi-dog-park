@@ -721,14 +721,57 @@
                     <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheets()[0];
-  var data = sheet.getDataRange().getValues();
   var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
+  var params = (e &amp;&amp; e.parameter) ? e.parameter : {};
+
+  // טיפול בפעולות כתיבה (שמירת שיבוץ, דוג-וולקר או בקשת שמירה) דרך GET למניעת חסימות CORS
+  if (params.action === 'addBooking') {
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
+    }
+    sheet.appendRow([
+      today,
+      params.id || ('bk-' + Date.now()),
+      params.slot || '',
+      params.dogName || '',
+      params.ownerName || '',
+      params.temperament || 'ידידותי לכולם 🐾',
+      params.incompatibleWith || ''
+    ]);
+  } else if (params.action === 'addWalker') {
+    var wSheet = ss.getSheetByName('DogWalkers') || ss.insertSheet('DogWalkers');
+    if (wSheet.getLastRow() === 0) {
+      wSheet.appendRow(['ID', 'Name', 'Phone', 'Service', 'Availability', 'CreatedAt']);
+    }
+    wSheet.appendRow([params.id, params.name, params.phone, params.service, params.availability, today]);
+  } else if (params.action === 'addCareRequest') {
+    var cSheet = ss.getSheetByName('CareRequests') || ss.insertSheet('CareRequests');
+    if (cSheet.getLastRow() === 0) {
+      cSheet.appendRow(['ID', 'Phone', 'StartDate', 'EndDate', 'Note', 'Offers', 'CreatedAt']);
+    }
+    cSheet.appendRow([params.id, params.phone, params.startDate, params.endDate, params.note || '', '', today]);
+  } else if (params.action === 'offerHelp') {
+    var cSheet2 = ss.getSheetByName('CareRequests');
+    if (cSheet2) {
+      var cData = cSheet2.getDataRange().getValues();
+      for (var r = 1; r &lt; cData.length; r++) {
+        if (String(cData[r][0]).trim() === String(params.requestId).trim()) {
+          var existingOffers = String(cData[r][5] || '').trim();
+          var updated = existingOffers ? (existingOffers + ' | ' + params.offerText) : params.offerText;
+          cSheet2.getRange(r + 1, 6).setValue(updated);
+          break;
+        }
+      }
+    }
+  }
+
+  // קריאת כל הנתונים העדכניים והחזרתם לאתר
+  var data = sheet.getDataRange().getValues();
   var bookings = [];
-  
   for (var i = 1; i &lt; data.length; i++) {
     var rowDate = data[i][0] instanceof Date 
       ? Utilities.formatDate(data[i][0], "Asia/Jerusalem", "yyyy-MM-dd") 
-      : String(data[i][0]).trim();
+      : String(data[i][0] || '').trim();
     if (!rowDate || rowDate === today) {
       var slotVal = String(data[i][2] || '').trim();
       var dogVal = String(data[i][3] || '').trim();
@@ -745,7 +788,6 @@
     }
   }
 
-  // טעינת מאגר דוג-וולקרים ובקשות שמירה מלשוניות ייעודיות
   var walkers = getSheetRowsAsObjects_(ss, 'DogWalkers', ['id', 'name', 'phone', 'service', 'availability']);
   var careRequests = getSheetRowsAsObjects_(ss, 'CareRequests', ['id', 'phone', 'startDate', 'endDate', 'note', 'offers']);
 
@@ -756,9 +798,8 @@
     careRequests: careRequests
   });
 
-  // תמיכה ב-JSONP למניעת חסימות CORS בדפדפן
-  if (e &amp;&amp; e.parameter &amp;&amp; e.parameter.callback) {
-    return ContentService.createTextOutput(e.parameter.callback + '(' + resultJson + ')')
+  if (params.callback) {
+    return ContentService.createTextOutput(params.callback + '(' + resultJson + ')')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput(resultJson)
@@ -785,53 +826,7 @@ function getSheetRowsAsObjects_(ss, sheetName, keys) {
 }
 
 function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var payload = JSON.parse(e.postData.contents);
-  var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
-
-  if (payload.type === 'walker') {
-    var wSheet = ss.getSheetByName('DogWalkers') || ss.insertSheet('DogWalkers');
-    if (wSheet.getLastRow() === 0) {
-      wSheet.appendRow(['ID', 'Name', 'Phone', 'Service', 'Availability', 'CreatedAt']);
-    }
-    wSheet.appendRow([payload.id, payload.name, payload.phone, payload.service, payload.availability, today]);
-  } else if (payload.type === 'careRequest') {
-    var cSheet = ss.getSheetByName('CareRequests') || ss.insertSheet('CareRequests');
-    if (cSheet.getLastRow() === 0) {
-      cSheet.appendRow(['ID', 'Phone', 'StartDate', 'EndDate', 'Note', 'Offers', 'CreatedAt']);
-    }
-    cSheet.appendRow([payload.id, payload.phone, payload.startDate, payload.endDate, payload.note || '', payload.offers || '', today]);
-  } else if (payload.type === 'offerHelp') {
-    var cSheet2 = ss.getSheetByName('CareRequests');
-    if (cSheet2) {
-      var data = cSheet2.getDataRange().getValues();
-      for (var i = 1; i &lt; data.length; i++) {
-        if (String(data[i][0]).trim() === String(payload.requestId).trim()) {
-          var existingOffers = String(data[i][5] || '').trim();
-          var updated = existingOffers ? (existingOffers + ' | ' + payload.offerText) : payload.offerText;
-          cSheet2.getRange(i + 1, 6).setValue(updated);
-          break;
-        }
-      }
-    }
-  } else {
-    var sheet = ss.getSheets()[0];
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
-    }
-    sheet.appendRow([
-      today,
-      payload.id,
-      payload.slot,
-      payload.dogName,
-      payload.ownerName,
-      payload.temperament,
-      (payload.incompatibleWith || []).join(', ')
-    ]);
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify({ status: 'success' }))
-    .setMimeType(ContentService.MimeType.JSON);
+  return doGet(e);
 }</pre>
                 </div>
             </div>
@@ -1085,43 +1080,44 @@ function doPost(e) {
             }
         }
 
-        // טעינת נתונים חכמה מ-Google Apps Script (כולל מנגנון JSONP לעקיפת חסימות CORS של הפניות Google)
-        function fetchFromGoogleAppsScript(url) {
+        // טעינת נתונים חכמה מ-Google Apps Script באמצעות JSONP (עוקף לחלוטין חסימות CORS והפניות של Google)
+        function callGoogleAppsScript(url, paramsObj = {}) {
             return new Promise((resolve, reject) => {
-                fetch(url, { method: 'GET', redirect: 'follow' })
-                    .then(res => {
-                        if (!res.ok) throw new Error('HTTP ' + res.status);
-                        return res.json();
-                    })
-                    .then(data => resolve(data))
-                    .catch(() => {
-                        const callbackName = 'adiSheetsCallback_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-                        const script = document.createElement('script');
-                        const timeoutId = setTimeout(() => {
-                            cleanup();
-                            reject(new Error('פג זמן ההמתנה לתשובה מהגיליון (Timeout)'));
-                        }, 10000);
+                const callbackName = 'adiSheetsCb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+                const script = document.createElement('script');
+                const timeoutId = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('פג זמן ההמתנה לתשובה מהגיליון (Timeout) - ודאו שפריסת ה-Apps Script מוגדרת כ-Anyone'));
+                }, 12000);
 
-                        function cleanup() {
-                            clearTimeout(timeoutId);
-                            delete window[callbackName];
-                            if (script.parentNode) script.parentNode.removeChild(script);
-                        }
+                function cleanup() {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
 
-                        window[callbackName] = function(data) {
-                            cleanup();
-                            resolve(data);
-                        };
+                window[callbackName] = function(data) {
+                    cleanup();
+                    resolve(data);
+                };
 
-                        script.onerror = function() {
-                            cleanup();
-                            reject(new Error('שגיאת רשת או הרשאות בגישה לסקריפט'));
-                        };
+                script.onerror = function() {
+                    cleanup();
+                    reject(new Error('שגיאה בגישה לכתובת הסקריפט - בדקו את ההרשאות ב-Deploy'));
+                };
 
-                        const sep = url.includes('?') ? '&' : '?';
-                        script.src = `${url}${sep}callback=${callbackName}&t=${Date.now()}`;
-                        document.body.appendChild(script);
-                    });
+                const searchParams = new URLSearchParams();
+                Object.keys(paramsObj).forEach(key => {
+                    if (paramsObj[key] !== undefined && paramsObj[key] !== null) {
+                        searchParams.append(key, String(paramsObj[key]));
+                    }
+                });
+                searchParams.append('callback', callbackName);
+                searchParams.append('t', String(Date.now()));
+
+                const sep = url.includes('?') ? '&' : '?';
+                script.src = `${url}${sep}${searchParams.toString()}`;
+                document.body.appendChild(script);
             });
         }
 
@@ -1136,8 +1132,7 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const cacheBusterUrl = GOOGLE_SCRIPT_URL.trim() + (GOOGLE_SCRIPT_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
-                    const data = await fetchFromGoogleAppsScript(cacheBusterUrl);
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), { action: 'read' });
                     if (data && data.status === 'success' && Array.isArray(data.bookings)) {
                         bookings = data.bookings;
                         if (Array.isArray(data.walkers)) dogWalkers = data.walkers;
@@ -1155,7 +1150,7 @@ function doPost(e) {
                 } catch (error) {
                     console.error('Error fetching from Google Sheets:', error);
                     errorBox.classList.remove('hidden');
-                    document.getElementById('sheets-error-detail').textContent = `פרטי שגיאה: ${error.message}. העתיקו את קוד ה-Apps Script המעודכן מכפתור העדכון ופרסמו כ-New version.`;
+                    document.getElementById('sheets-error-detail').textContent = `${error.message}. לחצו על "עדכון קוד Apps Script", העתיקו לגיליון ופרסמו כ-New version.`;
                     if (manualTrigger) showToast('שגיאה בסנכרון מול Google Sheets', 'info');
                 }
             } else {
@@ -1506,21 +1501,27 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL.trim(), {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(newBooking)
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addBooking',
+                        id: newBooking.id,
+                        slot: newBooking.slot,
+                        dogName: newBooking.dogName,
+                        ownerName: newBooking.ownerName,
+                        temperament: newBooking.temperament,
+                        incompatibleWith: incompatibleWith.join(', ')
                     });
-                    bookings.push(newBooking);
+                    if (data && data.status === 'success' && Array.isArray(data.bookings)) {
+                        bookings = data.bookings;
+                    } else {
+                        bookings.push(newBooking);
+                    }
                     renderLiveStatusTable();
                     renderSlots();
                     closeBookingModal();
                     showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} וסונכרן ל-Google Sheets 🐾`, 'success');
-                    setTimeout(() => loadBookings(false), 2000);
                 } catch (err) {
-                    console.error('Error posting to Google Sheets:', err);
-                    showToast('שגיאה בשמירה ל-Google Sheets, נסו שוב', 'info');
+                    console.error('Error saving to Google Sheets:', err);
+                    showToast('שגיאה בשמירה ל-Google Sheets: ' + err.message, 'info');
                 }
             } else {
                 bookings.push(newBooking);
@@ -1663,19 +1664,24 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL.trim(), {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(newWalker)
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addWalker',
+                        id: newWalker.id,
+                        name: newWalker.name,
+                        phone: newWalker.phone,
+                        service: newWalker.service,
+                        availability: newWalker.availability
                     });
-                    dogWalkers.unshift(newWalker);
+                    if (data && data.status === 'success' && Array.isArray(data.walkers)) {
+                        dogWalkers = data.walkers;
+                    } else {
+                        dogWalkers.unshift(newWalker);
+                    }
                     renderWalkersAndRequests();
                     closeWalkerModal();
                     showToast('נרשמת בהצלחה למאגר הדוג-וולקרים של עדי! 🐾', 'success');
-                    setTimeout(() => loadBookings(false), 2000);
                 } catch (err) {
-                    showToast('שגיאה בשמירה לגיליון, נסו שוב', 'info');
+                    showToast('שגיאה בשמירה לגיליון: ' + err.message, 'info');
                 }
             } else {
                 dogWalkers.unshift(newWalker);
@@ -1728,19 +1734,24 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL.trim(), {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(newRequest)
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addCareRequest',
+                        id: newRequest.id,
+                        phone: newRequest.phone,
+                        startDate: newRequest.startDate,
+                        endDate: newRequest.endDate,
+                        note: newRequest.note
                     });
-                    careRequests.unshift(newRequest);
+                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
+                        careRequests = data.careRequests;
+                    } else {
+                        careRequests.unshift(newRequest);
+                    }
                     renderWalkersAndRequests();
                     closeCareRequestModal();
                     showToast('בקשת הסידור פורסמה ותסונכרן עם קהילת עדי 🐾', 'success');
-                    setTimeout(() => loadBookings(false), 2000);
                 } catch (err) {
-                    showToast('שגיאה בפרסום הבקשה, נסו שוב', 'info');
+                    showToast('שגיאה בפרסום הבקשה: ' + err.message, 'info');
                 }
             } else {
                 careRequests.unshift(newRequest);
@@ -1784,13 +1795,14 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL.trim(), {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ type: 'offerHelp', requestId, offerText })
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'offerHelp',
+                        requestId,
+                        offerText
                     });
-                    setTimeout(() => loadBookings(false), 2000);
+                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
+                        careRequests = data.careRequests;
+                    }
                 } catch (err) {
                     console.error(err);
                 }
