@@ -154,9 +154,14 @@
                             <span id="sheets-error-detail" class="text-red-700">לא הצלחנו למשוך נתונים מהגיליון. ודאו שפריסת ה-Apps Script מוגדרת כ-"Anyone".</span>
                         </div>
                     </div>
-                    <button onclick="openScriptModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-xl shrink-0 transition-colors">
-                        עדכון קוד Apps Script
-                    </button>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a id="test-script-direct-link" href="#" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-red-100 text-red-800 border border-red-300 font-bold px-3 py-2 rounded-xl transition-colors">
+                            בדיקת קישור סקריפט
+                        </a>
+                        <button onclick="openScriptModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-xl transition-colors">
+                            עדכון קוד Apps Script
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -302,7 +307,7 @@
                                 </h3>
                                 <p id="current-date-label" class="text-xs text-slate-500 mt-0.5"></p>
                             </div>
-                            <button onclick="loadBookings()" title="רענון נתונים" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors">
+                            <button onclick="loadBookings(true)" title="רענון נתונים" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors">
                                 <i id="refresh-icon" class="ph-bold ph-arrows-clockwise"></i>
                                 <span>רענון</span>
                             </button>
@@ -311,10 +316,10 @@
                         <!-- סינון לפי חלקי היום -->
                         <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
                             <button onclick="setPeriodFilter('morning')" id="filter-morning" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
-                                ☀️ בוקר (06:30–11:30)
+                                ☀️ בוקר (06:30–10:30)
                             </button>
                             <button onclick="setPeriodFilter('afternoon')" id="filter-afternoon" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
-                                🌤️ אחה״צ וערב (16:00–21:30)
+                                🌤️ אחה״צ וערב (16:00–22:00)
                             </button>
                             <button onclick="setPeriodFilter('all')" id="filter-all" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
                                 📋 כל היום
@@ -704,7 +709,7 @@
 
                 <ol class="text-xs text-slate-700 space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200 list-decimal list-inside">
                     <li>פתחו גיליון חדש ב-<strong>Google Sheets</strong>, ובחרו בתפריט העליון: <strong>הרחבות (Extensions) &larr; Apps Script</strong>.</li>
-                    <li>מחקו את הקוד הקיים, הדביקו את הקוד שלמטה ולחצו על <strong>Deploy &larr; New deployment &larr; Web app</strong> (הגדירו גישה ל-<em>Anyone</em>).</li>
+                    <li>מחקו את הקוד הקיים, הדביקו את הקוד שלמטה ולחצו על <strong>Deploy &larr; Manage deployments &larr; New version &larr; Web app</strong> (הגדירו גישה ל-<em>Anyone</em>).</li>
                     <li>העתיקו את כתובת ה-Web App שקיבלתם והדביקו אותה בתוך המשתנה <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-amber-900">GOOGLE_SCRIPT_URL</code> בראש הסקריפט של דף זה.</li>
                 </ol>
 
@@ -715,7 +720,7 @@
                     </button>
                     <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getActiveSheet();
+  var sheet = ss.getSheets()[0];
   var data = sheet.getDataRange().getValues();
   var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
   var bookings = [];
@@ -810,7 +815,7 @@ function doPost(e) {
       }
     }
   } else {
-    var sheet = ss.getActiveSheet();
+    var sheet = ss.getSheets()[0];
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
     }
@@ -1014,9 +1019,11 @@ function doPost(e) {
 
         // אתחול הדף
         document.addEventListener('DOMContentLoaded', () => {
-            // עדכון קישורי הווטסאפ מהמשתנה הראשי
+            // עדכון קישורי הווטסאפ ובדיקת הסקריפט מהמשתנים הראשיים
             document.getElementById('invite-link-text').textContent = WHATSAPP_GROUP_URL;
             document.getElementById('whatsapp-direct-link').href = WHATSAPP_GROUP_URL;
+            const testLink = document.getElementById('test-script-direct-link');
+            if (testLink && GOOGLE_SCRIPT_URL) testLink.href = GOOGLE_SCRIPT_URL;
 
             updateDateHeader();
             updateSheetsBanner();
@@ -1081,7 +1088,6 @@ function doPost(e) {
         // טעינת נתונים חכמה מ-Google Apps Script (כולל מנגנון JSONP לעקיפת חסימות CORS של הפניות Google)
         function fetchFromGoogleAppsScript(url) {
             return new Promise((resolve, reject) => {
-                // ניסיון ראשון דרך fetch רגיל עם מעקב אחר הפניות
                 fetch(url, { method: 'GET', redirect: 'follow' })
                     .then(res => {
                         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1089,7 +1095,6 @@ function doPost(e) {
                     })
                     .then(data => resolve(data))
                     .catch(() => {
-                        // גיבוי אוטומטי באמצעות JSONP במקרה שהדפדפן חוסם את הפניית ה-CORS של script.googleusercontent.com
                         const callbackName = 'adiSheetsCallback_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
                         const script = document.createElement('script');
                         const timeoutId = setTimeout(() => {
@@ -1154,7 +1159,6 @@ function doPost(e) {
                     if (manualTrigger) showToast('שגיאה בסנכרון מול Google Sheets', 'info');
                 }
             } else {
-                // מצב הדגמה מקומי חכם המותאם לשעה הנוכחית
                 const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
                 const saved = localStorage.getItem(todayKey);
                 if (saved) {
@@ -1216,7 +1220,6 @@ function doPost(e) {
 
             const rows = [];
 
-            // 1. שורות עבור החלון הנוכחי ("בגינה כרגע")
             if (currentSlot) {
                 const currentBookings = bookings.filter(b => b.slot === currentSlot.id);
                 if (currentBookings.length === 0) {
@@ -1259,7 +1262,6 @@ function doPost(e) {
                 }
             }
 
-            // 2. שורות עבור החלון הבא ("הסבב הבא")
             if (nextSlot) {
                 const nextBookings = bookings.filter(b => b.slot === nextSlot.id);
                 if (nextBookings.length === 0) {
@@ -1305,7 +1307,6 @@ function doPost(e) {
             tbody.innerHTML = rows.join('');
         }
 
-        // פתיחה מהירה של טופס השיבוץ מתוך כרטיסיות המצב החי
         function quickBookCurrentOrNext(which) {
             const { currentSlot, nextSlot } = getCurrentAndNextSlots();
             if (which === 'current' && currentSlot) {
@@ -1315,7 +1316,6 @@ function doPost(e) {
             }
         }
 
-        // סינון חלונות זמן לפי חלק היום
         function setPeriodFilter(period) {
             activePeriodFilter = period;
             document.querySelectorAll('.period-btn').forEach(btn => {
@@ -1328,7 +1328,6 @@ function doPost(e) {
             renderSlots();
         }
 
-        // רינדור כרטיסיות חלונות הזמן של חצי שעה
         function renderSlots() {
             const container = document.getElementById('slots-container');
             const { currentSlot, nextSlot } = getCurrentAndNextSlots();
@@ -1398,7 +1397,6 @@ function doPost(e) {
             }).join('');
         }
 
-        // פתיחת מודאל רישום לחלון זמן ספציפי
         function openBookingModal(slotId) {
             document.getElementById('booking-slot-id').value = slotId;
             document.getElementById('modal-slot-title').textContent = slotId;
@@ -1435,7 +1433,6 @@ function doPost(e) {
             modal.classList.remove('flex');
         }
 
-        // בדיקת התנגשויות דו-כיוונית בזמן אמת בזמן הקלדה בטופס
         function findSlotConflicts(slotId, newDogName, newIncompatibleList) {
             const slotBookings = bookings.filter(b => b.slot === slotId);
             const cleanNewDog = newDogName.trim().toLowerCase();
@@ -1447,9 +1444,7 @@ function doPost(e) {
                 const cleanExistingDog = existing.dogName.trim().toLowerCase();
                 const cleanExistingInc = (existing.incompatibleWith || []).map(name => name.trim().toLowerCase()).filter(Boolean);
 
-                // בדיקה 1: האם הכלב הרשום מופיע ברשימת ה"לא מסתדר עם" של הכלב החדש
                 const matchInNewList = cleanNewInc.includes(cleanExistingDog);
-                // בדיקה 2: האם שם הכלב החדש מופיע ברשימת ה"לא מסתדר עם" של הכלב שכבר רשום
                 const matchInExistingList = cleanNewDog && cleanExistingInc.includes(cleanNewDog);
 
                 if (matchInNewList || matchInExistingList) {
@@ -1460,7 +1455,6 @@ function doPost(e) {
             return [...new Set(conflicts)];
         }
 
-        // הפעלת התראה ויזואלית חיה בטופס בעת הקלדה
         function checkLiveConflicts() {
             const slotId = document.getElementById('booking-slot-id').value;
             const dogName = document.getElementById('input-dog-name').value;
@@ -1480,7 +1474,6 @@ function doPost(e) {
             }
         }
 
-        // שליחת טופס הרשמה לחלון זמן
         async function submitBooking(e) {
             e.preventDefault();
 
@@ -1491,7 +1484,6 @@ function doPost(e) {
             const incRaw = document.getElementById('input-incompatible').value;
             const incompatibleWith = incRaw.split(',').map(s => s.trim()).filter(Boolean);
 
-            // מניעת שיבוץ במקרה של התנגשות מזוהה
             const conflicts = findSlotConflicts(slotId, dogName, incompatibleWith);
             if (conflicts.length > 0) {
                 checkLiveConflicts();
@@ -1514,7 +1506,7 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    await fetch(GOOGLE_SCRIPT_URL, {
+                    await fetch(GOOGLE_SCRIPT_URL.trim(), {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1525,14 +1517,12 @@ function doPost(e) {
                     renderSlots();
                     closeBookingModal();
                     showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} וסונכרן ל-Google Sheets 🐾`, 'success');
-                    // רענון אימות מול הגיליון לאחר 2 שניות
                     setTimeout(() => loadBookings(false), 2000);
                 } catch (err) {
                     console.error('Error posting to Google Sheets:', err);
                     showToast('שגיאה בשמירה ל-Google Sheets, נסו שוב', 'info');
                 }
             } else {
-                // שמירה מקומית במצב הדגמה
                 bookings.push(newBooking);
                 const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
                 localStorage.setItem(todayKey, JSON.stringify(bookings));
