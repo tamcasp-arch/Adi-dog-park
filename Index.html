@@ -163,7 +163,54 @@
     </section>
 
     <!-- אזור פתיחה ראשי (Hero Section) -->
-    <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24 px-4 sm:px-6">
+    <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-20 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-md border border-amber-100/80 mb-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-xl text-center md:text-right">
+                    <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-3.5 py-1 rounded-full text-xs font-bold">
+                        <i class="ph-fill ph-dog"></i>
+                        <span>קהילת גינת הכלבים • יישוב עדי</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                        מתאמים מפגשים, שומרים על בטיחות ונהנים יחד בגינה
+                    </h1>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        לוח שיבוצים חכם בחלונות של חצי שעה למניעת התנגשויות בין כלבים, מאגר דוג-וולקרים קהילתי וקבוצת ווטסאפ פעילה לתושבי עדי.
+                    </p>
+                    <div class="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                        <a href="#poll" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="ph-bold ph-calendar-check text-lg"></i>
+                            <span>שריון חלון זמן בגינה</span>
+                        </a>
+                        <button onclick="openJoinModal()" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="ph-fill ph-whatsapp-logo text-lg"></i>
+                            <span>הצטרפות לווטסאפ</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-7xl shadow-inner shrink-0">
+                    🐕‍🦺
+                </div>
+            </div>
+
+            <!-- כרטיסיות ערך לקהילה -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- כרטיסייה 1 -->
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-5 text-3xl">
+                        <i class="ph-duotone ph-shield-check"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">תיאום בטוח ללא התנגשויות</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        חלונות של 30 דקות המאפשרים לכל כלב ליהנות במרחב מתאים, עם התראה אוטומטית אם רשום כלב שלא מסתדר.
+                    </p>
+                </div>
+
+                <!-- כרטיסייה 2 -->
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-5 text-3xl">
+                        <i class="ph-duotone ph-users-three"></i>
+                    </div>
                     <h3 class="text-xl font-bold text-slate-900 mb-2">היכרות וקהילתיות</h3>
                     <p class="text-slate-600 text-sm leading-relaxed">
                         הזדמנות מעולה להכיר שכנים חדשים מעדי שאוהבים בעלי חיים, להתייעץ לגבי וטרינרים באזור, פנסיונים, או עזרה הדדית כשנוסעים לחופשה.
@@ -171,7 +218,7 @@
                 </div>
 
                 <!-- כרטיסייה 3 -->
-                <div class="bg-brand-cream p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
                     <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-5 text-3xl">
                         <i class="ph-duotone ph-megaphone"></i>
                     </div>
@@ -838,8 +885,8 @@ function doPost(e) {
         // 1. הדבק כאן את כתובת ה-Web App מ-Google Apps Script לסנכרון חי
         // 2. הדבק כאן את קישור ההזמנה האמיתי של קבוצת הווטסאפ של גינת כלבים עדי
         // =========================================================================
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-kbEDl7NKfxt400oVHNoMtoNCigNlXbvseOVm6DZGrRB9W-4hmxHoGCx5LZAddoqH/exec";
-        const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/Fk79QiSvlBc4nUdLr2UKJW";
+        const GOOGLE_SCRIPT_URL = "";
+        const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/AdiDogsCommunity2026";
 
         // הגדרת חלונות זמן של חצי שעה (מקסימום 30 דקות למפגש)
         const TIME_SLOTS = [
