@@ -240,7 +240,7 @@
                         <div id="sheets-status-banner" class="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                             <div class="flex items-center gap-2 text-amber-900">
                                 <i class="ph-fill ph-info text-amber-600 text-base shrink-0"></i>
-                                <span><strong>מצב הדגמה מקומי:</strong> הדבק את קישור ה-Web App במשתנה <code class="font-mono bg-amber-100 px-1 rounded">GOOGLE_SCRIPT_URL</code> לסנכרון חי.</span>
+                                <span><strong>מצב הדגמה מקומי:</strong> הדבק את קישור ה-Web App במשתנה <code class="font-mono bg-amber-100 px-1 rounded">GOOGLE_SCRIPT_</code> לסנכרון חי.</span>
                             </div>
                             <button onclick="openScriptModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-lg shrink-0 transition-colors flex items-center justify-center gap-1.5">
                                 <i class="ph-bold ph-code"></i>
@@ -658,7 +658,7 @@
                 <ol class="text-xs text-slate-700 space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200 list-decimal list-inside">
                     <li>פתחו גיליון חדש ב-<strong>Google Sheets</strong>, ובחרו בתפריט העליון: <strong>הרחבות (Extensions) &larr; Apps Script</strong>.</li>
                     <li>מחקו את הקוד הקיים, הדביקו את הקוד שלמטה ולחצו על <strong>Deploy &larr; New deployment &larr; Web app</strong> (הגדירו גישה ל-<em>Anyone</em>).</li>
-                    <li>העתיקו את כתובת ה-Web App שקיבלתם והדביקו אותה בתוך המשתנה <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-amber-900">GOOGLE_SCRIPT_URL</code> בראש הסקריפט של דף זה.</li>
+                    <li>העתיקו את כתובת ה-Web App שקיבלתם והדביקו אותה בתוך המשתנה <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-amber-900">GOOGLE_SCRIPT_</code> בראש הסקריפט של דף זה.</li>
                 </ol>
 
                 <div class="relative">
@@ -838,7 +838,7 @@ function doPost(e) {
         // 1. הדבק כאן את כתובת ה-Web App מ-Google Apps Script לסנכרון חי
         // 2. הדבק כאן את קישור ההזמנה האמיתי של קבוצת הווטסאפ של גינת כלבים עדי
         // =========================================================================
-        const GOOGLE_SCRIPT_URL = "";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUiOZLAlCXdupZgEIfK46GOgM3usceP5nMHWpXhPbVv5ljd0-TWwfIBt75vmqYAZvI/exec";
         const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/AdiDogsCommunity2026";
 
         // הגדרת חלונות זמן של חצי שעה (מקסימום 30 דקות למפגש)
