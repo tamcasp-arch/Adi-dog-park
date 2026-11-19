@@ -718,92 +718,149 @@
                         <i class="ph-bold ph-copy"></i>
                         <span>העתק קוד Apps Script</span>
                     </button>
-                    <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheets()[0];
-  var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
+                    <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">// גרסת סקריפט - האתר בודק שהיא תואמת. אם שיניתם את הקוד, פרסמו New version!
+var SCRIPT_VERSION = 3;
+var TZ = 'Asia/Jerusalem';
+
+function doGet(e) {
   var params = (e &amp;&amp; e.parameter) ? e.parameter : {};
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var today = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+  var saved = null;
+  var errorMsg = null;
 
-  // טיפול בפעולות כתיבה (שמירת שיבוץ, דוג-וולקר או בקשת שמירה) דרך GET למניעת חסימות CORS
-  if (params.action === 'addBooking') {
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
+  // נעילה כדי ששני תושבים שנרשמים באותו רגע לא ידרסו זה את זה
+  var lock = LockService.getScriptLock();
+  try {
+    if (params.action &amp;&amp; params.action !== 'read') {
+      lock.waitLock(20000);
+      saved = handleWrite_(ss, params, today);
     }
-    sheet.appendRow([
-      today,
-      params.id || ('bk-' + Date.now()),
-      params.slot || '',
-      params.dogName || '',
-      params.ownerName || '',
-      params.temperament || 'ידידותי לכולם 🐾',
-      params.incompatibleWith || ''
-    ]);
-  } else if (params.action === 'addWalker') {
-    var wSheet = ss.getSheetByName('DogWalkers') || ss.insertSheet('DogWalkers');
-    if (wSheet.getLastRow() === 0) {
-      wSheet.appendRow(['ID', 'Name', 'Phone', 'Service', 'Availability', 'CreatedAt']);
-    }
-    wSheet.appendRow([params.id, params.name, params.phone, params.service, params.availability, today]);
-  } else if (params.action === 'addCareRequest') {
-    var cSheet = ss.getSheetByName('CareRequests') || ss.insertSheet('CareRequests');
-    if (cSheet.getLastRow() === 0) {
-      cSheet.appendRow(['ID', 'Phone', 'StartDate', 'EndDate', 'Note', 'Offers', 'CreatedAt']);
-    }
-    cSheet.appendRow([params.id, params.phone, params.startDate, params.endDate, params.note || '', '', today]);
-  } else if (params.action === 'offerHelp') {
-    var cSheet2 = ss.getSheetByName('CareRequests');
-    if (cSheet2) {
-      var cData = cSheet2.getDataRange().getValues();
-      for (var r = 1; r &lt; cData.length; r++) {
-        if (String(cData[r][0]).trim() === String(params.requestId).trim()) {
-          var existingOffers = String(cData[r][5] || '').trim();
-          var updated = existingOffers ? (existingOffers + ' | ' + params.offerText) : params.offerText;
-          cSheet2.getRange(r + 1, 6).setValue(updated);
-          break;
-        }
-      }
-    }
+  } catch (err) {
+    errorMsg = String(err &amp;&amp; err.message ? err.message : err);
+  } finally {
+    try { lock.releaseLock(); } catch (ignore) {}
   }
 
-  // קריאת כל הנתונים העדכניים והחזרתם לאתר
-  var data = sheet.getDataRange().getValues();
   var bookings = [];
+  var bSheet = getBookingsSheet_(ss);
+  var data = bSheet.getDataRange().getValues();
   for (var i = 1; i &lt; data.length; i++) {
-    var rowDate = data[i][0] instanceof Date 
-      ? Utilities.formatDate(data[i][0], "Asia/Jerusalem", "yyyy-MM-dd") 
-      : String(data[i][0] || '').trim();
-    if (!rowDate || rowDate === today) {
-      var slotVal = String(data[i][2] || '').trim();
-      var dogVal = String(data[i][3] || '').trim();
-      if (slotVal &amp;&amp; dogVal) {
-        bookings.push({
-          id: String(data[i][1] || ('row-' + i)),
-          slot: slotVal,
-          dogName: dogVal,
-          ownerName: String(data[i][4] || '').trim(),
-          temperament: String(data[i][5] || 'ידידותי לכולם 🐾').trim(),
-          incompatibleWith: data[i][6] ? String(data[i][6]).split(',').map(function(s){ return s.trim(); }).filter(Boolean) : []
-        });
-      }
+    var rowDate = cellToText_(ss, data[i][0]);
+    var slotVal = cellToText_(ss, data[i][2]);
+    var dogVal = cellToText_(ss, data[i][3]);
+    if (rowDate === today &amp;&amp; slotVal &amp;&amp; dogVal) {
+      bookings.push({
+        id: cellToText_(ss, data[i][1]) || ('row-' + i),
+        slot: slotVal,
+        dogName: dogVal,
+        ownerName: cellToText_(ss, data[i][4]),
+        temperament: cellToText_(ss, data[i][5]) || 'ידידותי לכולם 🐾',
+        incompatibleWith: cellToText_(ss, data[i][6]).split(',').map(function (s) { return s.trim(); }).filter(Boolean)
+      });
     }
   }
 
-  var walkers = getSheetRowsAsObjects_(ss, 'DogWalkers', ['id', 'name', 'phone', 'service', 'availability']);
-  var careRequests = getSheetRowsAsObjects_(ss, 'CareRequests', ['id', 'phone', 'startDate', 'endDate', 'note', 'offers']);
-
-  var resultJson = JSON.stringify({
-    status: 'success',
+  var result = {
+    status: errorMsg ? 'error' : 'success',
+    version: SCRIPT_VERSION,
+    today: today,
+    saved: saved,
+    message: errorMsg,
     bookings: bookings,
-    walkers: walkers,
-    careRequests: careRequests
-  });
+    walkers: getSheetRowsAsObjects_(ss, 'DogWalkers', ['id', 'name', 'phone', 'service', 'availability']),
+    careRequests: getSheetRowsAsObjects_(ss, 'CareRequests', ['id', 'phone', 'startDate', 'endDate', 'note', 'offers'])
+  };
+  var json = JSON.stringify(result);
 
-  if (params.callback) {
-    return ContentService.createTextOutput(params.callback + '(' + resultJson + ')')
+  if (params.callback &amp;&amp; /^[A-Za-z0-9_]+$/.test(params.callback)) {
+    return ContentService.createTextOutput(params.callback + '(' + json + ')')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
-  return ContentService.createTextOutput(resultJson)
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  return doGet(e);
+}
+
+function handleWrite_(ss, p, today) {
+  if (p.action === 'addBooking') {
+    var sh = getBookingsSheet_(ss);
+    ensureHeader_(sh, ['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
+    var id = p.id || ('bk-' + Date.now());
+    appendTextRow_(sh, [today, id, p.slot || '', p.dogName || '', p.ownerName || '',
+      p.temperament || 'ידידותי לכולם 🐾', p.incompatibleWith || '']);
+    return id;
+  }
+  if (p.action === 'addWalker') {
+    var w = getOrCreateSheet_(ss, 'DogWalkers');
+    ensureHeader_(w, ['ID', 'Name', 'Phone', 'Service', 'Availability', 'CreatedAt']);
+    var wid = p.id || ('w-' + Date.now());
+    appendTextRow_(w, [wid, p.name || '', p.phone || '', p.service || '', p.availability || '', today]);
+    return wid;
+  }
+  if (p.action === 'addCareRequest') {
+    var c = getOrCreateSheet_(ss, 'CareRequests');
+    ensureHeader_(c, ['ID', 'Phone', 'StartDate', 'EndDate', 'Note', 'Offers', 'CreatedAt']);
+    var cid = p.id || ('req-' + Date.now());
+    appendTextRow_(c, [cid, p.phone || '', p.startDate || '', p.endDate || '', p.note || '', '', today]);
+    return cid;
+  }
+  if (p.action === 'offerHelp') {
+    var c2 = ss.getSheetByName('CareRequests');
+    if (!c2) throw new Error('CareRequests sheet not found');
+    var rows = c2.getDataRange().getValues();
+    for (var r = 1; r &lt; rows.length; r++) {
+      if (cellToText_(ss, rows[r][0]) === String(p.requestId || '').trim()) {
+        var existing = cellToText_(ss, rows[r][5]);
+        var cell = c2.getRange(r + 1, 6);
+        cell.setNumberFormat('@');
+        cell.setValue(existing ? (existing + ' | ' + p.offerText) : p.offerText);
+        return p.requestId;
+      }
+    }
+    throw new Error('Request not found: ' + p.requestId);
+  }
+  throw new Error('Unknown action: ' + p.action);
+}
+
+// גיליון השיבוצים: לפי שם, ואם אין - הגיליון הראשון שאינו של הדוג-וולקרים/בקשות
+function getBookingsSheet_(ss) {
+  var sh = ss.getSheetByName('Bookings');
+  if (sh) return sh;
+  var all = ss.getSheets();
+  for (var i = 0; i &lt; all.length; i++) {
+    var n = all[i].getName();
+    if (n !== 'DogWalkers' &amp;&amp; n !== 'CareRequests') return all[i];
+  }
+  return ss.insertSheet('Bookings', 0);
+}
+
+function getOrCreateSheet_(ss, name) {
+  return ss.getSheetByName(name) || ss.insertSheet(name);
+}
+
+function ensureHeader_(sh, header) {
+  if (sh.getLastRow() === 0) sh.appendRow(header);
+}
+
+// כתיבה כטקסט: מונע מ-Sheets להפוך תאריכים ל-Date ולמחוק אפס מוביל בטלפון
+function appendTextRow_(sh, values) {
+  var row = sh.getLastRow() + 1;
+  var rng = sh.getRange(row, 1, 1, values.length);
+  rng.setNumberFormat('@');
+  rng.setValues([values.map(function (v) { return String(v); })]);
+  SpreadsheetApp.flush();
+}
+
+// המרת תא לטקסט, כולל תאי Date ישנים (לפי אזור הזמן של הגיליון עצמו)
+function cellToText_(ss, val) {
+  if (val === null || val === undefined) return '';
+  if (Object.prototype.toString.call(val) === '[object Date]') {
+    return Utilities.formatDate(val, ss.getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  }
+  return String(val).trim();
 }
 
 function getSheetRowsAsObjects_(ss, sheetName, keys) {
@@ -813,20 +870,10 @@ function getSheetRowsAsObjects_(ss, sheetName, keys) {
   var out = [];
   for (var i = 1; i &lt; rows.length; i++) {
     var obj = {};
-    for (var k = 0; k &lt; keys.length; k++) {
-      var val = rows[i][k];
-      if (val instanceof Date) {
-        val = Utilities.formatDate(val, "Asia/Jerusalem", "yyyy-MM-dd");
-      }
-      obj[keys[k]] = String(val || '').trim();
-    }
+    for (var k = 0; k &lt; keys.length; k++) obj[keys[k]] = cellToText_(ss, rows[i][k]);
     if (obj.id) out.push(obj);
   }
   return out;
-}
-
-function doPost(e) {
-  return doGet(e);
 }</pre>
                 </div>
             </div>
@@ -886,6 +933,9 @@ function doPost(e) {
         // 2. קישור ההזמנה של קבוצת הווטסאפ של גינת כלבים עדי
         // =========================================================================
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVycFQtQDgc5eUWHnEdQImZ5mVmixXV3wthn71HaoxKW9rFepXDigx6FW2u1eXZZWb/exec";
+        // חייב להיות זהה ל-SCRIPT_VERSION בקוד ה-Apps Script שבגיליון
+        const EXPECTED_SCRIPT_VERSION = 3;
+        const OUTDATED_SCRIPT_MSG = 'קוד ה-Apps Script שפרוס בגיליון אינו מעודכן, ולכן הרשמות לא נשמרות. לחצו על "עדכון קוד Apps Script", הדביקו בגיליון ופרסמו: Deploy ← Manage deployments ← עריכה (עיפרון) ← Version: New version ← Deploy';
         const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/Fk79QiSvlBc4nUdLr2UKJW";
 
         // הגדרת חלונות זמן של חצי שעה (מקסימום 30 דקות למפגש)
@@ -1121,6 +1171,38 @@ function doPost(e) {
             });
         }
 
+        // שמירה לגיליון עם אימות אמיתי: מצליח רק אם השרת אישר שהרשומה נכתבה
+        async function saveToSheet(params, expectedId) {
+            const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), params);
+            if (!data || data.version !== EXPECTED_SCRIPT_VERSION) {
+                showSheetsError(OUTDATED_SCRIPT_MSG);
+                throw new Error('הסקריפט בגיליון אינו מעודכן - הנתונים לא נשמרו');
+            }
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'השמירה בגיליון נכשלה');
+            }
+            if (data.saved !== expectedId) {
+                throw new Error('השרת לא אישר את השמירה');
+            }
+            applyServerData(data);
+            return data;
+        }
+
+        function applyServerData(data) {
+            if (Array.isArray(data.bookings)) bookings = data.bookings;
+            if (Array.isArray(data.walkers)) dogWalkers = data.walkers;
+            if (Array.isArray(data.careRequests)) careRequests = data.careRequests;
+            renderLiveStatusTable();
+            renderSlots();
+            renderWalkersAndRequests();
+            updateLastSyncTime();
+        }
+
+        function showSheetsError(msg) {
+            document.getElementById('sheets-error-box').classList.remove('hidden');
+            document.getElementById('sheets-error-detail').textContent = msg;
+        }
+
         // טעינת שיבוצים ומאגר דוג-וולקרים (מ-Google Sheets אם מוגדר, או מ-localStorage במצב הדגמה)
         async function loadBookings(manualTrigger = false) {
             const refreshIcon = document.getElementById('refresh-icon');
@@ -1134,15 +1216,12 @@ function doPost(e) {
                 try {
                     const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), { action: 'read' });
                     if (data && data.status === 'success' && Array.isArray(data.bookings)) {
-                        bookings = data.bookings;
-                        if (Array.isArray(data.walkers)) dogWalkers = data.walkers;
-                        if (Array.isArray(data.careRequests)) careRequests = data.careRequests;
-
-                        errorBox.classList.add('hidden');
-                        renderLiveStatusTable();
-                        renderSlots();
-                        renderWalkersAndRequests();
-                        updateLastSyncTime();
+                        applyServerData(data);
+                        if (data.version !== EXPECTED_SCRIPT_VERSION) {
+                            showSheetsError(OUTDATED_SCRIPT_MSG);
+                        } else {
+                            errorBox.classList.add('hidden');
+                        }
                         if (manualTrigger) showToast('הנתונים סונכרנו בהצלחה מ-Google Sheets 🐾', 'success');
                     } else {
                         throw new Error('מבנה תשובה לא תקין מהסקריפט');
@@ -1501,7 +1580,7 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                    await saveToSheet({
                         action: 'addBooking',
                         id: newBooking.id,
                         slot: newBooking.slot,
@@ -1509,14 +1588,7 @@ function doPost(e) {
                         ownerName: newBooking.ownerName,
                         temperament: newBooking.temperament,
                         incompatibleWith: incompatibleWith.join(', ')
-                    });
-                    if (data && data.status === 'success' && Array.isArray(data.bookings)) {
-                        bookings = data.bookings;
-                    } else {
-                        bookings.push(newBooking);
-                    }
-                    renderLiveStatusTable();
-                    renderSlots();
+                    }, newBooking.id);
                     closeBookingModal();
                     showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} וסונכרן ל-Google Sheets 🐾`, 'success');
                 } catch (err) {
@@ -1664,20 +1736,14 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                    await saveToSheet({
                         action: 'addWalker',
                         id: newWalker.id,
                         name: newWalker.name,
                         phone: newWalker.phone,
                         service: newWalker.service,
                         availability: newWalker.availability
-                    });
-                    if (data && data.status === 'success' && Array.isArray(data.walkers)) {
-                        dogWalkers = data.walkers;
-                    } else {
-                        dogWalkers.unshift(newWalker);
-                    }
-                    renderWalkersAndRequests();
+                    }, newWalker.id);
                     closeWalkerModal();
                     showToast('נרשמת בהצלחה למאגר הדוג-וולקרים של עדי! 🐾', 'success');
                 } catch (err) {
@@ -1734,20 +1800,14 @@ function doPost(e) {
 
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                    await saveToSheet({
                         action: 'addCareRequest',
                         id: newRequest.id,
                         phone: newRequest.phone,
                         startDate: newRequest.startDate,
                         endDate: newRequest.endDate,
                         note: newRequest.note
-                    });
-                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
-                        careRequests = data.careRequests;
-                    } else {
-                        careRequests.unshift(newRequest);
-                    }
-                    renderWalkersAndRequests();
+                    }, newRequest.id);
                     closeCareRequestModal();
                     showToast('בקשת הסידור פורסמה ותסונכרן עם קהילת עדי 🐾', 'success');
                 } catch (err) {
@@ -1788,25 +1848,19 @@ function doPost(e) {
             const helperPhone = document.getElementById('offer-helper-phone').value.trim();
             const offerText = `${helperName} (${helperPhone})`;
 
-            const req = careRequests.find(r => r.id === requestId);
-            if (req) {
-                req.offers = req.offers ? `${req.offers} | ${offerText}` : offerText;
-            }
-
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
                 try {
-                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
-                        action: 'offerHelp',
-                        requestId,
-                        offerText
-                    });
-                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
-                        careRequests = data.careRequests;
-                    }
+                    await saveToSheet({ action: 'offerHelp', requestId, offerText }, requestId);
                 } catch (err) {
                     console.error(err);
+                    showToast('שגיאה בשמירת ההצעה: ' + err.message, 'info');
+                    return;
                 }
             } else {
+                const req = careRequests.find(r => r.id === requestId);
+                if (req) {
+                    req.offers = req.offers ? `${req.offers} | ${offerText}` : offerText;
+                }
                 localStorage.setItem('adi_dogs_care_requests_v1', JSON.stringify(careRequests));
             }
 
