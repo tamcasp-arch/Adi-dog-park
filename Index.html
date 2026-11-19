@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קהילת הולכי על ארבע בעדי | קבוצת גינת הכלבים</title>
+    <!-- טעינת Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- טעינת גופן Rubik המתאים לעברית מודרנית וידידותית -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- אייקונים מבית Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Rubik', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            green: '#2E7D32',
+                            lightGreen: '#E8F5E9',
+                            orange: '#F57C00',
+                            lightOrange: '#FFF3E0',
+                            cream: '#FAF8F5',
+                            whatsapp: '#25D366',
+                            whatsappDark: '#128C7E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-cream text-slate-800 antialiased selection:bg-amber-200 selection:text-slate-900">
+
+    <!-- תפריט ניווט עליון -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-amber-100 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-md">
+                    <i class="ph-fill ph-paw-print text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg text-slate-900 block leading-tight">הולכי על ארבע</span>
+                    <span class="text-xs text-emerald-700 font-medium block">יישוב קהילתי עדי</span>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+                <a href="#live-status" class="hover:text-orange-600 transition-colors font-semibold text-emerald-700">מי בגינה עכשיו?</a>
+                <a href="#poll" class="hover:text-orange-600 transition-colors">לוח שיבוצים</a>
+                <a href="#dog-walkers" class="hover:text-orange-600 transition-colors font-semibold text-orange-600">דוג-וולקרים ושמירה</a>
+                <a href="#rules" class="hover:text-orange-600 transition-colors">כללי הגינה</a>
+            </nav>
+
+            <button onclick="openJoinModal()" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-semibold text-sm px-4 py-2.5 rounded-full shadow-sm hover:shadow transition-all flex items-center gap-2 active:scale-95">
+                <i class="ph-fill ph-whatsapp-logo text-lg"></i>
+                <span>הצטרפות לקבוצה</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- טבלת מצב בזמן אמת בראש העמוד: מי בגינה עכשיו ומי בחלון הבא? -->
+    <section id="live-status" class="pt-6 pb-4 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-lg border border-emerald-100 overflow-hidden">
+                <!-- סרגל עליון של הטבלה החיה -->
+                <div class="bg-gradient-to-l from-emerald-800 to-teal-900 text-white px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center text-2xl shrink-0">
+                            🐕
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-lg sm:text-xl font-bold">מי בגינה עכשיו ומי בחלון הבא?</h2>
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-500/25 border border-emerald-400/40 text-emerald-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    LIVE
+                                </span>
+                            </div>
+                            <p class="text-xs text-emerald-100/90 mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <span>🕒 השעה כעת: <strong id="live-clock" class="font-mono text-amber-300" dir="ltr">--:--:--</strong></span>
+                                <span>•</span>
+                                <span id="last-sync-label">מעודכן לעכשיו</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 self-end sm:self-center">
+                        <button onclick="loadBookings(true)" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-3.5 py-2 rounded-xl border border-white/20 transition-all flex items-center gap-1.5 active:scale-95">
+                            <i id="live-refresh-icon" class="ph-bold ph-arrows-clockwise"></i>
+                            <span>רענן נתונים עכשיו</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- כרטיסיות סיכום מהיר לחלון נוכחי ולחלון הבא -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-slate-100 bg-slate-50/70 border-b border-slate-100">
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                            <div>
+                                <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wide block">בגינה כרגע (חלון נוכחי)</span>
+                                <span id="current-slot-badge" class="text-base font-extrabold text-slate-900" dir="ltr">--:-- - --:--</span>
+                            </div>
+                        </div>
+                        <button id="quick-join-current-btn" onclick="quickBookCurrentOrNext('current')" class="text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl transition-colors">
+                            + הצטרפות לסבב
+                        </button>
+                    </div>
+
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-orange-500 shrink-0"></span>
+                            <div>
+                                <span class="text-[11px] font-bold text-orange-700 uppercase tracking-wide block">הסבב הבא (חלון קרוב)</span>
+                                <span id="next-slot-badge" class="text-base font-extrabold text-slate-900" dir="ltr">--:-- - --:--</span>
+                            </div>
+                        </div>
+                        <button id="quick-join-next-btn" onclick="quickBookCurrentOrNext('next')" class="text-xs font-bold bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded-xl transition-colors">
+                            + שריון הבא
+                        </button>
+                    </div>
+                </div>
+
+                <!-- טבלת נוכחות בזמן אמת -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+                                <th class="py-3 px-4">סטטוס וחלון זמן</th>
+                                <th class="py-3 px-4">שם הכלב/ה ואופי</th>
+                                <th class="py-3 px-4">בעלים</th>
+                                <th class="py-3 px-4">הערות / לא מסתדר עם</th>
+                            </tr>
+                        </thead>
+                        <tbody id="live-status-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- שורות הטבלה ירונדרו כאן בזמן אמת -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- הודעת שגיאה מפורטת במקרה של בעיית חיבור ל-Google Sheets -->
+                <div id="sheets-error-box" class="hidden p-4 bg-red-50 border-t border-red-200 text-red-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start gap-2.5">
+                        <i class="ph-fill ph-warning-circle text-red-600 text-xl shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="block text-sm text-red-800">שגיאה בטעינת הנתונים מ-Google Sheets</strong>
+                            <span id="sheets-error-detail" class="text-red-700">לא הצלחנו למשוך נתונים מהגיליון. ודאו שפריסת ה-Apps Script מוגדרת כ-"Anyone".</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <a id="test-script-direct-link" href="#" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-red-100 text-red-800 border border-red-300 font-bold px-3 py-2 rounded-xl transition-colors">
+                            בדיקת קישור סקריפט
+                        </a>
+                        <button onclick="openScriptModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3.5 py-2 rounded-xl transition-colors">
+                            עדכון קוד Apps Script
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- אזור פתיחה ראשי (Hero Section) -->
+    <section class="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-20 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-md border border-amber-100/80 mb-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-xl text-center md:text-right">
+                    <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-3.5 py-1 rounded-full text-xs font-bold">
+                        <i class="ph-fill ph-dog"></i>
+                        <span>קהילת גינת הכלבים • יישוב עדי</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                        מתאמים מפגשים, שומרים על בטיחות ונהנים יחד בגינה
+                    </h1>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        לוח שיבוצים חכם בחלונות של חצי שעה למניעת התנגשויות בין כלבים, מאגר דוג-וולקרים קהילתי וקבוצת ווטסאפ פעילה לתושבי עדי.
+                    </p>
+                    <div class="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                        <a href="#poll" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="ph-bold ph-calendar-check text-lg"></i>
+                            <span>שריון חלון זמן בגינה</span>
+                        </a>
+                        <button onclick="openJoinModal()" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="ph-fill ph-whatsapp-logo text-lg"></i>
+                            <span>הצטרפות לווטסאפ</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-7xl shadow-inner shrink-0">
+                    🐕‍🦺
+                </div>
+            </div>
+
+            <!-- כרטיסיות ערך לקהילה -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- כרטיסייה 1 -->
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-5 text-3xl">
+                        <i class="ph-duotone ph-shield-check"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">תיאום בטוח ללא התנגשויות</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        חלונות של 30 דקות המאפשרים לכל כלב ליהנות במרחב מתאים, עם התראה אוטומטית אם רשום כלב שלא מסתדר.
+                    </p>
+                </div>
+
+                <!-- כרטיסייה 2 -->
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-5 text-3xl">
+                        <i class="ph-duotone ph-users-three"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">היכרות וקהילתיות</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        הזדמנות מעולה להכיר שכנים חדשים מעדי שאוהבים בעלי חיים, להתייעץ לגבי וטרינרים באזור, פנסיונים, או עזרה הדדית כשנוסעים לחופשה.
+                    </p>
+                </div>
+
+                <!-- כרטיסייה 3 -->
+                <div class="bg-white p-6 rounded-3xl border border-amber-100/80 hover:shadow-md transition-shadow">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-5 text-3xl">
+                        <i class="ph-duotone ph-megaphone"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">עדכונים שוטפים על הגינה</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        דיווחים בזמן אמת אם הברזייה תקינה, אם השער נסגר היטב, ניקיון הגינה, או אם נמצא קולר / צעצוע שנשכח מאחור.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- לוח זמנים מומלץ + סקר אינטראקטיבי בזמן אמת -->
+    <section id="poll" class="py-16 px-4 sm:px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-gradient-to-br from-emerald-800 to-teal-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- צד ימין: לוח זמנים מומלץ למפגשים -->
+                    <div class="lg:col-span-5 space-y-5">
+                        <div class="inline-flex items-center gap-2 bg-white/15 px-3 py-1 rounded-full text-xs font-semibold text-amber-200">
+                            <i class="ph-fill ph-timer"></i>
+                            <span>חלונות זמן של 30 דקות</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-bold leading-snug">מתי נפגשים בגינת הכלבים?</h2>
+                        <p class="text-emerald-100 text-sm leading-relaxed">
+                            כדי לאפשר לכל הכלבים ליהנות בבטחה – כולל כלבים חששנים או כאלה שלא מסתדרים יחד – חילקנו את היום לחלונות של <strong>חצי שעה מקסימום</strong>. בדקו מי רשום ושריינו חלון!
+                        </p>
+
+                        <div class="space-y-3 pt-2">
+                            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center text-2xl shrink-0">
+                                    <i class="ph-fill ph-hourglass-high"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base">מקסימום 30 דקות לסבב</h4>
+                                    <p class="text-xs text-emerald-200">שומרים על תחלופה הוגנת ומאפשרים לכולם להיכנס</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-orange-400/20 text-orange-300 flex items-center justify-center text-2xl shrink-0">
+                                    <i class="ph-fill ph-shield-warning"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base">סינון התנגשויות חכם</h4>
+                                    <p class="text-xs text-emerald-200">המערכת מתריעה מראש אם רשום כלב שלא מסתדר</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-400/20 text-emerald-200 flex items-center justify-center text-2xl shrink-0">
+                                    <i class="ph-fill ph-table"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-base">מסונכרן ל-Google Sheets</h4>
+                                    <p class="text-xs text-emerald-200">כל התושבים רואים את השיבוצים מתעדכנים בזמן אמת</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- צד שמאל: לוח שיבוצים אינטראקטיבי בחלונות של חצי שעה -->
+                    <div class="lg:col-span-7 bg-white text-slate-800 rounded-2xl p-5 sm:p-7 shadow-lg">
+                        <!-- באנר סטטוס חיבור ל-Google Sheets -->
+                        <div id="sheets-status-banner" class="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            <div class="flex items-center gap-2 text-amber-900">
+                                <i class="ph-fill ph-info text-amber-600 text-base shrink-0"></i>
+                                <span><strong>מצב הדגמה מקומי:</strong> הדבק את קישור ה-Web App במשתנה <code class="font-mono bg-amber-100 px-1 rounded">GOOGLE_SCRIPT_URL</code> לסנכרון חי.</span>
+                            </div>
+                            <button onclick="openScriptModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-lg shrink-0 transition-colors flex items-center justify-center gap-1.5">
+                                <i class="ph-bold ph-code"></i>
+                                <span>קוד ל-Google Sheets</span>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <span>📅 לוח מפגשים יומי (חלונות של 30 דק')</span>
+                                </h3>
+                                <p id="current-date-label" class="text-xs text-slate-500 mt-0.5"></p>
+                            </div>
+                            <button onclick="loadBookings(true)" title="רענון נתונים" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors">
+                                <i id="refresh-icon" class="ph-bold ph-arrows-clockwise"></i>
+                                <span>רענון</span>
+                            </button>
+                        </div>
+
+                        <!-- סינון לפי חלקי היום -->
+                        <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
+                            <button onclick="setPeriodFilter('morning')" id="filter-morning" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
+                                ☀️ בוקר (06:30–10:30)
+                            </button>
+                            <button onclick="setPeriodFilter('afternoon')" id="filter-afternoon" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
+                                🌤️ אחה״צ וערב (16:00–22:00)
+                            </button>
+                            <button onclick="setPeriodFilter('all')" id="filter-all" class="period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all shrink-0">
+                                📋 כל היום
+                            </button>
+                        </div>
+
+                        <!-- רשימת חלונות הזמן של חצי שעה -->
+                        <div id="slots-container" class="space-y-3 max-h-[420px] overflow-y-auto pl-1 pr-0.5">
+                            <!-- חלונות הזמן ירונדרו כאן דינמית -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- מאגר דוג-וולקרים ובקשות שמירה לחופשה (קהילת עדי) -->
+    <section id="dog-walkers" class="py-16 px-4 sm:px-6 bg-amber-50/40 border-t border-amber-100">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center max-w-2xl mx-auto mb-10 space-y-2.5">
+                <div class="inline-flex items-center gap-2 bg-orange-100 text-orange-800 px-3.5 py-1 rounded-full text-xs font-bold">
+                    <i class="ph-fill ph-hand-heart"></i>
+                    <span>ערבות הדדית בקהילת עדי</span>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900">מאגר דוג-וולקרים ובקשות שמירה</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    נוסעים לחופשה או צריכים עזרה בטיול יומי? פרסמו בקשת שמירה או פנו ישירות לדוג-וולקרים מהיישוב.
+                </p>
+                <div class="inline-flex items-center gap-1.5 text-xs text-slate-500 bg-white px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <i class="ph-fill ph-info text-orange-500 text-sm"></i>
+                    <span>לתשומת לבכם: האתר משמש להיכרות ותיאום ראשוני בלבד (נייד ותאריכים). כל סידור כספי, אם קיים, מתבצע חיצונית וישירות בין הצדדים.</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+                <!-- עמודה 1: מאגר הדוג-וולקרים והשומרים הרשומים בעדי -->
+                <div class="lg:col-span-6 bg-white rounded-3xl p-6 shadow-md border border-slate-200/80 space-y-5">
+                    <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl">
+                                <i class="ph-fill ph-identification-badge"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">מאגר דוג-וולקרים ושומרים</h3>
+                                <p class="text-xs text-slate-500">תושבי עדי הזמינים לטיולים או שמירה בבית</p>
+                            </div>
+                        </div>
+                        <button onclick="openWalkerModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95">
+                            <i class="ph-bold ph-user-plus"></i>
+                            <span>הרשמה כדוג-וולקר</span>
+                        </button>
+                    </div>
+
+                    <div id="walkers-list" class="space-y-3 max-h-[430px] overflow-y-auto pl-1">
+                        <!-- כרטיסיות דוג-וולקרים ירונדרו כאן -->
+                    </div>
+                </div>
+
+                <!-- עמודה 2: לוח בקשות שמירה לתקופה / חופשה -->
+                <div class="lg:col-span-6 bg-white rounded-3xl p-6 shadow-md border border-slate-200/80 space-y-5">
+                    <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl">
+                                <i class="ph-fill ph-suitcase-rolling"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">בקשות סידור / שמירה לחופשה</h3>
+                                <p class="text-xs text-slate-500">בעלי כלבים שמחפשים סידור לתאריכים מוגדרים</p>
+                            </div>
+                        </div>
+                        <button onclick="openCareRequestModal()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0 active:scale-95">
+                            <i class="ph-bold ph-plus"></i>
+                            <span>בקשת סידור</span>
+                        </button>
+                    </div>
+
+                    <div id="care-requests-list" class="space-y-3 max-h-[430px] overflow-y-auto pl-1">
+                        <!-- בקשות שמירה ירונדרו כאן -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- כללי התנהגות קצרים וידידותיים -->
+    <section id="rules" class="py-14 px-4 sm:px-6 bg-white border-t border-amber-100">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-orange-500 font-bold text-sm tracking-wide">שומרים על אווירה טובה</span>
+                <h2 class="text-3xl font-bold text-slate-900 mt-1">כללי הבית של הגינה והקבוצה</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-amber-50/60 border border-amber-100">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold text-lg">1</div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">שומרים על גינה נקייה</h4>
+                        <p class="text-sm text-slate-600">אוספים אחרי הכלבים שלנו ומשליכים לפח. גינה נקייה היא גינה שנעים לכולנו לחזור אליה.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-lg">2</div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">עין פקוחה ושער סגור</h4>
+                        <p class="text-sm text-slate-600">מוודאים ששער הכניסה הכפול נסגר היטב בכל כניסה ויציאה, ומשגיחים על הכלבים בזמן המשחק.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-orange-50/60 border border-orange-100">
+                    <div class="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center shrink-0 font-bold text-lg">3</div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">מתחשבים בכלבים אחרים</h4>
+                        <p class="text-sm text-slate-600">אם מגיע כלב חששן או שמתקיים אילוף, מתאמים מראש כניסה נעימה ומכבדת לכל ההולכים על ארבע.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-5 rounded-2xl bg-blue-50/60 border border-blue-100">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold text-lg">4</div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">שיח מכבד בווטסאפ</h4>
+                        <p class="text-sm text-slate-600">שומרים על קבוצה חיובית, ללא פרסומות מסחריות או הודעות שרשרת, ומתמקדים בכלבים ובגינה.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- קריאה אחרונה לפעולה (Footer CTA) -->
+    <footer class="bg-slate-900 text-white py-14 px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto text-center space-y-6">
+            <div class="w-16 h-16 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-3xl mx-auto shadow-lg">
+                🐾
+            </div>
+            <h2 class="text-3xl font-bold">נתראה בגינת הכלבים בעדי!</h2>
+            <p class="text-slate-300 max-w-xl mx-auto">
+                הצטרפו עכשיו לקבוצת הווטסאפ, הציגו את עצמכם ואת הכלב/ה שלכם, ונתחיל לתאם מפגשים.
+            </p>
+            <div class="pt-2">
+                <button onclick="openJoinModal()" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-lg transition-all inline-flex items-center gap-3 active:scale-95">
+                    <i class="ph-fill ph-whatsapp-logo text-2xl"></i>
+                    <span>הצטרפות לקבוצת הווטסאפ של עדי</span>
+                </button>
+            </div>
+            <div class="pt-8 border-t border-slate-800 text-xs text-slate-400">
+                יוזמה קהילתית של תושבי עדי אוהבי כלבים • נבנה באהבה לקהילה 🐶
+            </div>
+        </div>
+    </footer>
+
+    <!-- חלונית מודאלית לרישום לחלון זמן של חצי שעה + בדיקת התנגשויות -->
+    <div id="booking-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative my-auto">
+            <button onclick="closeBookingModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl shrink-0">
+                        <i class="ph-fill ph-paw-print"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">סבב של 30 דקות מקסימום</span>
+                        <h3 class="text-xl font-bold text-slate-900 mt-1">רישום לחלון <span id="modal-slot-title" class="text-emerald-700">17:00 - 17:30</span></h3>
+                    </div>
+                </div>
+
+                <!-- תצוגת כלבים שכבר רשומים בחלון זה -->
+                <div id="modal-existing-dogs" class="bg-slate-50 rounded-2xl p-3 border border-slate-200 text-xs">
+                    <!-- יתמלא דינמית -->
+                </div>
+
+                <!-- התראת התנגשות דינמית (מופיעה אוטומטית בזמן הקלדה) -->
+                <div id="conflict-warning-box" class="hidden rounded-2xl p-3.5 bg-red-50 border-2 border-red-300 text-red-900 text-xs space-y-1.5">
+                    <div class="flex items-center gap-2 font-bold text-red-700 text-sm">
+                        <i class="ph-fill ph-warning-octagon text-xl shrink-0"></i>
+                        <span>שים לב! זוהתה התנגשות בחלון זמן זה</span>
+                    </div>
+                    <p id="conflict-warning-text" class="leading-relaxed"></p>
+                </div>
+
+                <!-- טופס הרשמה -->
+                <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-3.5">
+                    <input type="hidden" id="booking-slot-id">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">שם הכלב/ה *</label>
+                            <input type="text" id="input-dog-name" required oninput="checkLiveConflicts()" placeholder="למשל: לואי" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">שם הבעלים *</label>
+                            <input type="text" id="input-owner-name" required placeholder="למשל: דנה" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">אופי / רגישות הכלב</label>
+                        <select id="input-temperament" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white">
+                            <option value="ידידותי לכולם 🐾">ידידותי לכולם 🐾</option>
+                            <option value="אנרגטי מאוד ⚡">אנרגטי מאוד ⚡</option>
+                            <option value="מעדיף נקבות 🐕">מעדיף נקבות 🐕</option>
+                            <option value="מעדיף זכרים 🦮">מעדיף זכרים 🦮</option>
+                            <option value="חששן / צריך מרחב 🌿">חששן / צריך מרחב 🌿</option>
+                            <option value="קטן ועדין 🐩">קטן ועדין 🐩</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            כלבים שלא מסתדרים איתו <span class="font-normal text-slate-400">(אופציונלי, מופרד בפסיקים)</span>
+                        </label>
+                        <input type="text" id="input-incompatible" oninput="checkLiveConflicts()" placeholder="למשל: רקס, לונה" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm">
+                        <p class="text-[11px] text-slate-500 mt-1">המערכת תתריע אוטומטית אם אחד מהכלבים הללו כבר רשום בחלון זה או ינסה להירשם אליו.</p>
+                    </div>
+
+                    <div class="pt-2 flex flex-col gap-2">
+                        <button type="submit" id="submit-booking-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-check-circle text-lg"></i>
+                            <span>שריין חלון של חצי שעה</span>
+                        </button>
+                        <button type="button" onclick="closeBookingModal()" class="w-full text-slate-500 hover:text-slate-700 text-xs font-medium py-1.5">
+                            ביטול
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלונית מודאלית להרשמה למאגר הדוג-וולקרים -->
+    <div id="walker-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative my-auto">
+            <button onclick="closeWalkerModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shrink-0">
+                        <i class="ph-fill ph-person-simple-walk"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">מאגר קהילתי עדי</span>
+                        <h3 class="text-xl font-bold text-slate-900 mt-1">הצטרפות למאגר הדוג-וולקרים</h3>
+                    </div>
+                </div>
+
+                <form id="walker-form" onsubmit="submitWalkerRegistration(event)" class="space-y-3.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">שם מלא *</label>
+                            <input type="text" id="walker-name" required placeholder="למשל: רועי כהן" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">טלפון נייד ליצירת קשר *</label>
+                            <input type="tel" id="walker-phone" required dir="ltr" placeholder="050-0000000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm text-right">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">סוג השירות המוצע *</label>
+                        <select id="walker-service" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm bg-white">
+                            <option value="דוג-וולקר (טיולים יומיים) 🦮">דוג-וולקר (טיולים יומיים) 🦮</option>
+                            <option value="פנסיון ביתי / שמירה לחופשות 🏡">פנסיון ביתי / שמירה לחופשות 🏡</option>
+                            <option value="גם טיולים וגם שמירה לחופשות 🐾">גם טיולים וגם שמירה לחופשות 🐾</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">זמינות / תאריכים וניסיון קצר *</label>
+                        <textarea id="walker-availability" rows="2" required placeholder="למשל: זמין כל יום אחה״צ ובסופי שבוע, ניסיון עם כלבים גדולים וקטנים..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none text-sm"></textarea>
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        הפרטים יוצגו במאגר הקהילתי כדי שבעלי כלבים יוכלו ליצור קשר טלפוני ולתאם. כל סיכום כספי מתבצע חיצונית לאתר.
+                    </p>
+
+                    <button type="submit" id="submit-walker-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-check-circle text-lg"></i>
+                        <span>פרסם במאגר הדוג-וולקרים</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלונית מודאלית לבקשת סידור / שמירה לחופשה (טלפון נייד ותאריכים בלבד) -->
+    <div id="care-request-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative my-auto">
+            <button onclick="closeCareRequestModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl shrink-0">
+                        <i class="ph-fill ph-calendar-heart"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">תיאום שמירה / טיולים</span>
+                        <h3 class="text-xl font-bold text-slate-900 mt-1">בקשת סידור לכלב</h3>
+                    </div>
+                </div>
+
+                <form id="care-request-form" onsubmit="submitCareRequest(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">טלפון נייד לחזרה *</label>
+                        <input type="tel" id="req-phone" required dir="ltr" placeholder="052-0000000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm text-right">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">מתאריך *</label>
+                            <input type="date" id="req-start-date" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">עד תאריך *</label>
+                            <input type="date" id="req-end-date" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">הערה קצרה על הכלב / סוג הסידור (אופציונלי)</label>
+                        <input type="text" id="req-note" placeholder="למשל: כלב בינוני רגוע, זקוק לשני טיולים ביום" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none text-sm">
+                    </div>
+
+                    <p class="text-[11px] text-slate-500 bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
+                        הבקשה תפורסם עם מספר הנייד והתאריכים שציינת. שומרים ודוג-וולקרים מהיישוב יוכלו להציע עזרה וליצור איתך קשר ישירות (כל הסדר כספי מתבצע מחוץ לאתר).
+                    </p>
+
+                    <button type="submit" id="submit-req-btn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-paper-plane-tilt text-lg"></i>
+                        <span>פרסם בקשת סידור</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלונית מודאלית להצעת עזרה לבקשת שמירה קיימת -->
+    <div id="offer-help-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+            <button onclick="closeOfferHelpModal()" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            <div class="space-y-3.5">
+                <h3 class="text-lg font-bold text-slate-900">הצעת עזרה בשמירה / טיול</h3>
+                <p id="offer-target-summary" class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200"></p>
+                <form onsubmit="submitOfferHelp(event)" class="space-y-3">
+                    <input type="hidden" id="offer-request-id">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">השם שלך *</label>
+                        <input type="text" id="offer-helper-name" required placeholder="למשל: מאיה" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">טלפון נייד שלך *</label>
+                        <input type="tel" id="offer-helper-phone" required dir="ltr" placeholder="054-0000000" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm text-right outline-none focus:border-emerald-500">
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow">
+                        שלח הצעה והצג פרטי קשר
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלונית מודאלית להעתקת קוד Google Apps Script לחיבור ל-Google Sheets -->
+    <div id="script-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative my-auto">
+            <button onclick="closeScriptModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shrink-0">
+                        <i class="ph-fill ph-google-logo"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900">חיבור ל-Google Sheets ב-3 צעדים פשוטים</h3>
+                        <p class="text-xs text-slate-500">מאפשר סנכרון בזמן אמת של כל השיבוצים בין כל תושבי היישוב בחינם</p>
+                    </div>
+                </div>
+
+                <ol class="text-xs text-slate-700 space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200 list-decimal list-inside">
+                    <li>פתחו גיליון חדש ב-<strong>Google Sheets</strong>, ובחרו בתפריט העליון: <strong>הרחבות (Extensions) &larr; Apps Script</strong>.</li>
+                    <li>מחקו את הקוד הקיים, הדביקו את הקוד שלמטה ולחצו על <strong>Deploy &larr; Manage deployments &larr; New version &larr; Web app</strong> (הגדירו גישה ל-<em>Anyone</em>).</li>
+                    <li>העתיקו את כתובת ה-Web App שקיבלתם והדביקו אותה בתוך המשתנה <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono text-amber-900">GOOGLE_SCRIPT_URL</code> בראש הסקריפט של דף זה.</li>
+                </ol>
+
+                <div class="relative">
+                    <button onclick="copyAppsScriptCode()" class="absolute top-3 left-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow flex items-center gap-1.5 transition-colors">
+                        <i class="ph-bold ph-copy"></i>
+                        <span>העתק קוד Apps Script</span>
+                    </button>
+                    <pre id="apps-script-code" dir="ltr" class="bg-slate-900 text-emerald-300 text-[11px] font-mono p-4 pt-12 rounded-2xl overflow-x-auto max-h-64 leading-relaxed">function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheets()[0];
+  var today = Utilities.formatDate(new Date(), "Asia/Jerusalem", "yyyy-MM-dd");
+  var params = (e &amp;&amp; e.parameter) ? e.parameter : {};
+
+  // טיפול בפעולות כתיבה (שמירת שיבוץ, דוג-וולקר או בקשת שמירה) דרך GET למניעת חסימות CORS
+  if (params.action === 'addBooking') {
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(['Date', 'ID', 'Slot', 'DogName', 'OwnerName', 'Temperament', 'IncompatibleWith']);
+    }
+    sheet.appendRow([
+      today,
+      params.id || ('bk-' + Date.now()),
+      params.slot || '',
+      params.dogName || '',
+      params.ownerName || '',
+      params.temperament || 'ידידותי לכולם 🐾',
+      params.incompatibleWith || ''
+    ]);
+  } else if (params.action === 'addWalker') {
+    var wSheet = ss.getSheetByName('DogWalkers') || ss.insertSheet('DogWalkers');
+    if (wSheet.getLastRow() === 0) {
+      wSheet.appendRow(['ID', 'Name', 'Phone', 'Service', 'Availability', 'CreatedAt']);
+    }
+    wSheet.appendRow([params.id, params.name, params.phone, params.service, params.availability, today]);
+  } else if (params.action === 'addCareRequest') {
+    var cSheet = ss.getSheetByName('CareRequests') || ss.insertSheet('CareRequests');
+    if (cSheet.getLastRow() === 0) {
+      cSheet.appendRow(['ID', 'Phone', 'StartDate', 'EndDate', 'Note', 'Offers', 'CreatedAt']);
+    }
+    cSheet.appendRow([params.id, params.phone, params.startDate, params.endDate, params.note || '', '', today]);
+  } else if (params.action === 'offerHelp') {
+    var cSheet2 = ss.getSheetByName('CareRequests');
+    if (cSheet2) {
+      var cData = cSheet2.getDataRange().getValues();
+      for (var r = 1; r &lt; cData.length; r++) {
+        if (String(cData[r][0]).trim() === String(params.requestId).trim()) {
+          var existingOffers = String(cData[r][5] || '').trim();
+          var updated = existingOffers ? (existingOffers + ' | ' + params.offerText) : params.offerText;
+          cSheet2.getRange(r + 1, 6).setValue(updated);
+          break;
+        }
+      }
+    }
+  }
+
+  // קריאת כל הנתונים העדכניים והחזרתם לאתר
+  var data = sheet.getDataRange().getValues();
+  var bookings = [];
+  for (var i = 1; i &lt; data.length; i++) {
+    var rowDate = data[i][0] instanceof Date 
+      ? Utilities.formatDate(data[i][0], "Asia/Jerusalem", "yyyy-MM-dd") 
+      : String(data[i][0] || '').trim();
+    if (!rowDate || rowDate === today) {
+      var slotVal = String(data[i][2] || '').trim();
+      var dogVal = String(data[i][3] || '').trim();
+      if (slotVal &amp;&amp; dogVal) {
+        bookings.push({
+          id: String(data[i][1] || ('row-' + i)),
+          slot: slotVal,
+          dogName: dogVal,
+          ownerName: String(data[i][4] || '').trim(),
+          temperament: String(data[i][5] || 'ידידותי לכולם 🐾').trim(),
+          incompatibleWith: data[i][6] ? String(data[i][6]).split(',').map(function(s){ return s.trim(); }).filter(Boolean) : []
+        });
+      }
+    }
+  }
+
+  var walkers = getSheetRowsAsObjects_(ss, 'DogWalkers', ['id', 'name', 'phone', 'service', 'availability']);
+  var careRequests = getSheetRowsAsObjects_(ss, 'CareRequests', ['id', 'phone', 'startDate', 'endDate', 'note', 'offers']);
+
+  var resultJson = JSON.stringify({
+    status: 'success',
+    bookings: bookings,
+    walkers: walkers,
+    careRequests: careRequests
+  });
+
+  if (params.callback) {
+    return ContentService.createTextOutput(params.callback + '(' + resultJson + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(resultJson)
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheetRowsAsObjects_(ss, sheetName, keys) {
+  var sh = ss.getSheetByName(sheetName);
+  if (!sh) return [];
+  var rows = sh.getDataRange().getValues();
+  var out = [];
+  for (var i = 1; i &lt; rows.length; i++) {
+    var obj = {};
+    for (var k = 0; k &lt; keys.length; k++) {
+      var val = rows[i][k];
+      if (val instanceof Date) {
+        val = Utilities.formatDate(val, "Asia/Jerusalem", "yyyy-MM-dd");
+      }
+      obj[keys[k]] = String(val || '').trim();
+    }
+    if (obj.id) out.push(obj);
+  }
+  return out;
+}
+
+function doPost(e) {
+  return doGet(e);
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלונית מודאלית להצטרפות לקבוצת הווטסאפ -->
+    <div id="join-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-[fadeIn_0.2s_ease-out]">
+            <button onclick="closeJoinModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="text-center space-y-4">
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-brand-whatsapp flex items-center justify-center mx-auto text-4xl">
+                    <i class="ph-fill ph-whatsapp-logo"></i>
+                </div>
+                
+                <h3 class="text-2xl font-bold text-slate-900">איזה כיף שאתם מצטרפים!</h3>
+                <p class="text-sm text-slate-600">
+                    הקישור מוכן עבורכם. לחצו על הכפתור הירוק למעבר ישיר לקבוצת <strong>"קהילת הולכי על ארבע בעדי"</strong> בווטסאפ, או העתיקו את הקישור לשיתוף.
+                </p>
+
+                <!-- שדה קישור להעתקה -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between gap-2 text-left" dir="ltr">
+                    <span id="invite-link-text" class="text-xs text-slate-600 font-mono truncate px-2">https://chat.whatsapp.com/AdiDogsCommunity2026</span>
+                    <button onclick="copyInviteLink()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-colors flex items-center gap-1" dir="rtl">
+                        <i class="ph ph-copy"></i>
+                        <span>העתקה</span>
+                    </button>
+                </div>
+
+                <div class="pt-2 space-y-2.5">
+                    <a id="whatsapp-direct-link" href="https://chat.whatsapp.com/AdiDogsCommunity2026" target="_blank" rel="noopener noreferrer" onclick="handleWhatsAppRedirect(event)" class="w-full bg-brand-whatsapp hover:bg-brand-whatsappDark text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="ph-fill ph-whatsapp-logo text-xl"></i>
+                        <span>פתיחת קבוצת הווטסאפ</span>
+                    </a>
+                    <button onclick="closeJoinModal()" class="w-full text-slate-500 hover:text-slate-700 text-sm font-medium py-2">
+                        סגירה וחזרה לדף
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- הודעת Toast צפה לאישור פעולות (ללא alert) -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-medium">
+        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
+        <span id="toast-message">הקישור הועתק ללוח!</span>
+    </div>
+
+    <!-- לוגיקת JavaScript לאינטראקטיביות -->
+    <script>
+        // =========================================================================
+        // הגדרות חיבור מרכזיות:
+        // 1. הדבק כאן את כתובת ה-Web App מ-Google Apps Script לסנכרון חי
+        // 2. הדבק כאן את קישור ההזמנה האמיתי של קבוצת הווטסאפ של גינת כלבים עדי
+        // =========================================================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVycFQtQDgc5eUWHnEdQImZ5mVmixXV3wthn71HaoxKW9rFepXDigx6FW2u1eXZZWb/exec";
+        const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/Fk79QiSvlBc4nUdLr2UKJW";
+
+        // הגדרת חלונות זמן של חצי שעה (מקסימום 30 דקות למפגש)
+        const TIME_SLOTS = [
+            // בוקר
+            { id: '06:30-07:00', label: '06:30 - 07:00', period: 'morning', startMin: 6 * 60 + 30, endMin: 7 * 60 },
+            { id: '07:00-07:30', label: '07:00 - 07:30', period: 'morning', startMin: 7 * 60, endMin: 7 * 60 + 30 },
+            { id: '07:30-08:00', label: '07:30 - 08:00', period: 'morning', startMin: 7 * 60 + 30, endMin: 8 * 60 },
+            { id: '08:00-08:30', label: '08:00 - 08:30', period: 'morning', startMin: 8 * 60, endMin: 8 * 60 + 30 },
+            { id: '08:30-09:00', label: '08:30 - 09:00', period: 'morning', startMin: 8 * 60 + 30, endMin: 9 * 60 },
+            { id: '09:00-09:30', label: '09:00 - 09:30', period: 'morning', startMin: 9 * 60, endMin: 9 * 60 + 30 },
+            { id: '09:30-10:00', label: '09:30 - 10:00', period: 'morning', startMin: 9 * 60 + 30, endMin: 10 * 60 },
+            { id: '10:00-10:30', label: '10:00 - 10:30', period: 'morning', startMin: 10 * 60, endMin: 10 * 60 + 30 },
+            // אחה"צ וערב
+            { id: '16:00-16:30', label: '16:00 - 16:30', period: 'afternoon', startMin: 16 * 60, endMin: 16 * 60 + 30 },
+            { id: '16:30-17:00', label: '16:30 - 17:00', period: 'afternoon', startMin: 16 * 60 + 30, endMin: 17 * 60 },
+            { id: '17:00-17:30', label: '17:00 - 17:30', period: 'afternoon', startMin: 17 * 60, endMin: 17 * 60 + 30 },
+            { id: '17:30-18:00', label: '17:30 - 18:00', period: 'afternoon', startMin: 17 * 60 + 30, endMin: 18 * 60 },
+            { id: '18:00-18:30', label: '18:00 - 18:30', period: 'afternoon', startMin: 18 * 60, endMin: 18 * 60 + 30 },
+            { id: '18:30-19:00', label: '18:30 - 19:00', period: 'afternoon', startMin: 18 * 60 + 30, endMin: 19 * 60 },
+            { id: '19:00-19:30', label: '19:00 - 19:30', period: 'afternoon', startMin: 19 * 60, endMin: 19 * 60 + 30 },
+            { id: '19:30-20:00', label: '19:30 - 20:00', period: 'afternoon', startMin: 19 * 60 + 30, endMin: 20 * 60 },
+            { id: '20:00-20:30', label: '20:00 - 20:30', period: 'afternoon', startMin: 20 * 60, endMin: 20 * 60 + 30 },
+            { id: '20:30-21:00', label: '20:30 - 21:00', period: 'afternoon', startMin: 20 * 60 + 30, endMin: 21 * 60 },
+            { id: '21:00-21:30', label: '21:00 - 21:30', period: 'afternoon', startMin: 21 * 60, endMin: 21 * 60 + 30 },
+            { id: '21:30-22:00', label: '21:30 - 22:00', period: 'afternoon', startMin: 21 * 60 + 30, endMin: 22 * 60 }
+        ];
+
+        let bookings = [];
+        let dogWalkers = [];
+        let careRequests = [];
+        let activePeriodFilter = 'afternoon';
+        let currentActiveSlotId = null;
+        let nextUpcomingSlotId = null;
+
+        // חישוב חלון הזמן הנוכחי והבא לפי השעון המקומי
+        function getCurrentAndNextSlots() {
+            const now = new Date();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+            let currentSlot = TIME_SLOTS.find(s => nowMinutes >= s.startMin && nowMinutes < s.endMin) || null;
+            let nextSlot = null;
+
+            if (currentSlot) {
+                const idx = TIME_SLOTS.findIndex(s => s.id === currentSlot.id);
+                nextSlot = TIME_SLOTS[idx + 1] || TIME_SLOTS[0];
+            } else {
+                nextSlot = TIME_SLOTS.find(s => s.startMin > nowMinutes) || TIME_SLOTS[0];
+            }
+
+            return { currentSlot, nextSlot };
+        }
+
+        // יצירת נתוני דמה חכמים המותאמים לשעה הנוכחית (למצב תצוגה מקדימה לפני חיבור ל-Sheets)
+        function buildDynamicDemoBookings() {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            const curId = currentSlot ? currentSlot.id : '19:30-20:00';
+            const nxtId = nextSlot ? nextSlot.id : '20:00-20:30';
+
+            return [
+                {
+                    id: 'demo-1',
+                    slot: curId,
+                    dogName: 'לואי',
+                    ownerName: 'דנה',
+                    temperament: 'ידידותי לכולם 🐾',
+                    incompatibleWith: []
+                },
+                {
+                    id: 'demo-2',
+                    slot: curId,
+                    dogName: 'רקס',
+                    ownerName: 'עומר',
+                    temperament: 'אנרגטי מאוד ⚡',
+                    incompatibleWith: ['טופי', 'סימבה']
+                },
+                {
+                    id: 'demo-3',
+                    slot: nxtId,
+                    dogName: 'טופי',
+                    ownerName: 'נועה',
+                    temperament: 'חששן / צריך מרחב 🌿',
+                    incompatibleWith: ['רקס']
+                },
+                {
+                    id: 'demo-4',
+                    slot: nxtId,
+                    dogName: 'לונה',
+                    ownerName: 'מיכל',
+                    temperament: 'קטן ועדין 🐩',
+                    incompatibleWith: []
+                }
+            ];
+        }
+
+        function buildDemoWalkersAndRequests() {
+            return {
+                walkers: [
+                    {
+                        id: 'w-1',
+                        name: 'רועי כהן',
+                        phone: '050-4412890',
+                        service: 'דוג-וולקר (טיולים יומיים) 🦮',
+                        availability: 'זמין בימים א׳–ה׳ אחה״צ ובסופי שבוע, ניסיון רב עם כלבים אנרגטיים'
+                    },
+                    {
+                        id: 'w-2',
+                        name: 'ענבל לוי',
+                        phone: '052-8831920',
+                        service: 'גם טיולים וגם שמירה לחופשות 🐾',
+                        availability: 'בית פרטי עם חצר מגודרת בעדי, זמינה לסופ״שים וחופשות'
+                    }
+                ],
+                careRequests: [
+                    {
+                        id: 'req-1',
+                        phone: '054-7192034',
+                        startDate: '2026-11-26',
+                        endDate: '2026-11-29',
+                        note: 'כלבה בינונית וידידותית, מחפשים סידור לסוף השבוע',
+                        offers: 'רועי כהן (050-4412890)'
+                    }
+                ]
+            };
+        }
+
+        // אתחול הדף
+        document.addEventListener('DOMContentLoaded', () => {
+            // עדכון קישורי הווטסאפ ובדיקת הסקריפט מהמשתנים הראשיים
+            document.getElementById('invite-link-text').textContent = WHATSAPP_GROUP_URL;
+            document.getElementById('whatsapp-direct-link').href = WHATSAPP_GROUP_URL;
+            const testLink = document.getElementById('test-script-direct-link');
+            if (testLink && GOOGLE_SCRIPT_URL) testLink.href = GOOGLE_SCRIPT_URL;
+
+            updateDateHeader();
+            updateSheetsBanner();
+            startLiveClock();
+            
+            // בחירת פילטר ברירת מחדל לפי השעה ביום
+            const hour = new Date().getHours();
+            setPeriodFilter(hour < 13 ? 'morning' : 'afternoon');
+            
+            loadBookings(false);
+
+            // רענון אוטומטי ברקע כל 30 שניות מ-Google Sheets
+            setInterval(() => {
+                if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                    loadBookings(false);
+                }
+            }, 30000);
+        });
+
+        // שעון חי המתעדכן כל שנייה ומזהה חילופי חלונות זמן אוטומטית
+        function startLiveClock() {
+            function tick() {
+                const now = new Date();
+                document.getElementById('live-clock').textContent = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+                const newCurId = currentSlot ? currentSlot.id : null;
+                const newNxtId = nextSlot ? nextSlot.id : null;
+
+                if (newCurId !== currentActiveSlotId || newNxtId !== nextUpcomingSlotId) {
+                    currentActiveSlotId = newCurId;
+                    nextUpcomingSlotId = newNxtId;
+                    renderLiveStatusTable();
+                    renderSlots();
+                }
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        // הצגת התאריך הנוכחי בעברית
+        function updateDateHeader() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date-label').textContent = `היום, ${now.toLocaleDateString('he-IL', options)} • סבבים של 30 דקות`;
+        }
+
+        // עדכון באנר החיבור ל-Google Sheets בהתאם לקיום כתובת הסקריפט
+        function updateSheetsBanner() {
+            const banner = document.getElementById('sheets-status-banner');
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                banner.className = "mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs";
+                banner.innerHTML = `
+                    <div class="flex items-center gap-2 text-emerald-900">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span><strong>מחובר ל-Google Sheets:</strong> כל השיבוצים והמאגר מסונכרנים בזמן אמת עם תושבי עדי.</span>
+                    </div>
+                `;
+            }
+        }
+
+        // טעינת נתונים חכמה מ-Google Apps Script באמצעות JSONP (עוקף לחלוטין חסימות CORS והפניות של Google)
+        function callGoogleAppsScript(url, paramsObj = {}) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'adiSheetsCb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+                const script = document.createElement('script');
+                const timeoutId = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('פג זמן ההמתנה לתשובה מהגיליון (Timeout) - ודאו שפריסת ה-Apps Script מוגדרת כ-Anyone'));
+                }, 12000);
+
+                function cleanup() {
+                    clearTimeout(timeoutId);
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+
+                window[callbackName] = function(data) {
+                    cleanup();
+                    resolve(data);
+                };
+
+                script.onerror = function() {
+                    cleanup();
+                    reject(new Error('שגיאה בגישה לכתובת הסקריפט - בדקו את ההרשאות ב-Deploy'));
+                };
+
+                const searchParams = new URLSearchParams();
+                Object.keys(paramsObj).forEach(key => {
+                    if (paramsObj[key] !== undefined && paramsObj[key] !== null) {
+                        searchParams.append(key, String(paramsObj[key]));
+                    }
+                });
+                searchParams.append('callback', callbackName);
+                searchParams.append('t', String(Date.now()));
+
+                const sep = url.includes('?') ? '&' : '?';
+                script.src = `${url}${sep}${searchParams.toString()}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        // טעינת שיבוצים ומאגר דוג-וולקרים (מ-Google Sheets אם מוגדר, או מ-localStorage במצב הדגמה)
+        async function loadBookings(manualTrigger = false) {
+            const refreshIcon = document.getElementById('refresh-icon');
+            const liveRefreshIcon = document.getElementById('live-refresh-icon');
+            const errorBox = document.getElementById('sheets-error-box');
+
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
+            if (liveRefreshIcon) liveRefreshIcon.classList.add('animate-spin');
+
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                try {
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), { action: 'read' });
+                    if (data && data.status === 'success' && Array.isArray(data.bookings)) {
+                        bookings = data.bookings;
+                        if (Array.isArray(data.walkers)) dogWalkers = data.walkers;
+                        if (Array.isArray(data.careRequests)) careRequests = data.careRequests;
+
+                        errorBox.classList.add('hidden');
+                        renderLiveStatusTable();
+                        renderSlots();
+                        renderWalkersAndRequests();
+                        updateLastSyncTime();
+                        if (manualTrigger) showToast('הנתונים סונכרנו בהצלחה מ-Google Sheets 🐾', 'success');
+                    } else {
+                        throw new Error('מבנה תשובה לא תקין מהסקריפט');
+                    }
+                } catch (error) {
+                    console.error('Error fetching from Google Sheets:', error);
+                    errorBox.classList.remove('hidden');
+                    document.getElementById('sheets-error-detail').textContent = `${error.message}. לחצו על "עדכון קוד Apps Script", העתיקו לגיליון ופרסמו כ-New version.`;
+                    if (manualTrigger) showToast('שגיאה בסנכרון מול Google Sheets', 'info');
+                }
+            } else {
+                const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
+                const saved = localStorage.getItem(todayKey);
+                if (saved) {
+                    bookings = JSON.parse(saved);
+                } else {
+                    bookings = buildDynamicDemoBookings();
+                    localStorage.setItem(todayKey, JSON.stringify(bookings));
+                }
+
+                const savedWalkers = localStorage.getItem('adi_dogs_walkers_v1');
+                const savedReqs = localStorage.getItem('adi_dogs_care_requests_v1');
+                if (savedWalkers && savedReqs) {
+                    dogWalkers = JSON.parse(savedWalkers);
+                    careRequests = JSON.parse(savedReqs);
+                } else {
+                    const demoData = buildDemoWalkersAndRequests();
+                    dogWalkers = demoData.walkers;
+                    careRequests = demoData.careRequests;
+                    localStorage.setItem('adi_dogs_walkers_v1', JSON.stringify(dogWalkers));
+                    localStorage.setItem('adi_dogs_care_requests_v1', JSON.stringify(careRequests));
+                }
+
+                renderLiveStatusTable();
+                renderSlots();
+                renderWalkersAndRequests();
+                updateLastSyncTime();
+                if (manualTrigger) showToast('הנתונים רועננו (מצב תצוגה מקדימה) 🐾', 'success');
+            }
+
+            setTimeout(() => {
+                if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+                if (liveRefreshIcon) liveRefreshIcon.classList.remove('animate-spin');
+            }, 400);
+        }
+
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('last-sync-label').textContent = `סונכרן לאחרונה ב-${timeStr}`;
+        }
+
+        // רינדור טבלת המצב בזמן אמת בראש העמוד ("מי בגינה עכשיו ומי בחלון הבא?")
+        function renderLiveStatusTable() {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            const currentBadge = document.getElementById('current-slot-badge');
+            const nextBadge = document.getElementById('next-slot-badge');
+            const quickCurBtn = document.getElementById('quick-join-current-btn');
+            const tbody = document.getElementById('live-status-tbody');
+
+            if (currentSlot) {
+                currentBadge.textContent = currentSlot.label;
+                quickCurBtn.classList.remove('hidden');
+            } else {
+                currentBadge.textContent = 'מחוץ לשעות הפעילות';
+                quickCurBtn.classList.add('hidden');
+            }
+
+            nextBadge.textContent = nextSlot ? nextSlot.label : '06:30 - 07:00';
+
+            const rows = [];
+
+            if (currentSlot) {
+                const currentBookings = bookings.filter(b => b.slot === currentSlot.id);
+                if (currentBookings.length === 0) {
+                    rows.push(`
+                        <tr class="bg-emerald-50/30">
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    בגינה כרגע (${currentSlot.label})
+                                </span>
+                            </td>
+                            <td colspan="3" class="py-3.5 px-4 text-slate-500 text-xs">
+                                הגינה פנויה כרגע! <button onclick="openBookingModal('${currentSlot.id}')" class="text-emerald-700 font-bold underline hover:text-emerald-900 mr-1">לחצו כאן לשריין את החלון הנוכחי</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    currentBookings.forEach(b => {
+                        const incHtml = (b.incompatibleWith && b.incompatibleWith.length > 0)
+                            ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-lg"><i class="ph-fill ph-warning text-amber-600"></i> לא מסתדר עם: ${escapeHtml(b.incompatibleWith.join(', '))}</span>`
+                            : `<span class="text-xs text-slate-400">מסתדר עם כולם</span>`;
+
+                        rows.push(`
+                            <tr class="bg-emerald-50/40 hover:bg-emerald-50/80 transition-colors">
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                        בגינה כרגע (${currentSlot.label})
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900">🐶 ${escapeHtml(b.dogName)}</div>
+                                    <div class="text-xs text-slate-500">${escapeHtml(b.temperament)}</div>
+                                </td>
+                                <td class="py-3.5 px-4 font-medium text-slate-700">${escapeHtml(b.ownerName)}</td>
+                                <td class="py-3.5 px-4">${incHtml}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            }
+
+            if (nextSlot) {
+                const nextBookings = bookings.filter(b => b.slot === nextSlot.id);
+                if (nextBookings.length === 0) {
+                    rows.push(`
+                        <tr class="bg-orange-50/20">
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1.5 bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                                    <i class="ph-bold ph-clock"></i>
+                                    הסבב הבא (${nextSlot.label})
+                                </span>
+                            </td>
+                            <td colspan="3" class="py-3.5 px-4 text-slate-500 text-xs">
+                                טרם נרשמו כלבים לסבב הבא. <button onclick="openBookingModal('${nextSlot.id}')" class="text-orange-700 font-bold underline hover:text-orange-900 mr-1">שריינו מקום לסבב הבא</button>
+                            </td>
+                        </tr>
+                    `);
+                } else {
+                    nextBookings.forEach(b => {
+                        const incHtml = (b.incompatibleWith && b.incompatibleWith.length > 0)
+                            ? `<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-lg"><i class="ph-fill ph-warning text-amber-600"></i> לא מסתדר עם: ${escapeHtml(b.incompatibleWith.join(', '))}</span>`
+                            : `<span class="text-xs text-slate-400">מסתדר עם כולם</span>`;
+
+                        rows.push(`
+                            <tr class="bg-orange-50/30 hover:bg-orange-50/70 transition-colors">
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+                                        <i class="ph-bold ph-clock"></i>
+                                        הסבב הבא (${nextSlot.label})
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900">🐾 ${escapeHtml(b.dogName)}</div>
+                                    <div class="text-xs text-slate-500">${escapeHtml(b.temperament)}</div>
+                                </td>
+                                <td class="py-3.5 px-4 font-medium text-slate-700">${escapeHtml(b.ownerName)}</td>
+                                <td class="py-3.5 px-4">${incHtml}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            }
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        function quickBookCurrentOrNext(which) {
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            if (which === 'current' && currentSlot) {
+                openBookingModal(currentSlot.id);
+            } else if (nextSlot) {
+                openBookingModal(nextSlot.id);
+            }
+        }
+
+        function setPeriodFilter(period) {
+            activePeriodFilter = period;
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.className = 'period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all shrink-0';
+            });
+            const activeBtn = document.getElementById(`filter-${period}`);
+            if (activeBtn) {
+                activeBtn.className = 'period-btn px-3.5 py-1.5 rounded-full text-xs font-bold border border-emerald-600 bg-emerald-600 text-white shadow-sm transition-all shrink-0';
+            }
+            renderSlots();
+        }
+
+        function renderSlots() {
+            const container = document.getElementById('slots-container');
+            const { currentSlot, nextSlot } = getCurrentAndNextSlots();
+            const filteredSlots = activePeriodFilter === 'all' 
+                ? TIME_SLOTS 
+                : TIME_SLOTS.filter(s => s.period === activePeriodFilter);
+
+            container.innerHTML = filteredSlots.map(slot => {
+                const slotBookings = bookings.filter(b => b.slot === slot.id);
+                const hasDogs = slotBookings.length > 0;
+                const isCurrent = currentSlot && currentSlot.id === slot.id;
+                const isNext = nextSlot && nextSlot.id === slot.id;
+
+                let statusBadge = '';
+                let cardBorder = hasDogs ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50/70 border-slate-200';
+                if (isCurrent) {
+                    statusBadge = `<span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">בגינה עכשיו</span>`;
+                    cardBorder = 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-200';
+                } else if (isNext) {
+                    statusBadge = `<span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">הסבב הבא</span>`;
+                    cardBorder = 'bg-orange-50/60 border-orange-300';
+                }
+
+                const dogsHtml = hasDogs 
+                    ? `<div class="mt-2.5 flex flex-wrap gap-2">
+                        ${slotBookings.map(b => {
+                            const hasIncompatible = b.incompatibleWith && b.incompatibleWith.length > 0;
+                            return `
+                                <div class="bg-white border ${hasIncompatible ? 'border-amber-300' : 'border-emerald-200'} rounded-xl px-2.5 py-1.5 text-xs shadow-sm flex flex-col gap-0.5">
+                                    <div class="flex items-center gap-1.5 font-bold text-slate-800">
+                                        <span>🐶 ${escapeHtml(b.dogName)}</span>
+                                        <span class="font-normal text-slate-400">(${escapeHtml(b.ownerName)})</span>
+                                        <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-md font-medium">${escapeHtml(b.temperament)}</span>
+                                    </div>
+                                    ${hasIncompatible ? `
+                                        <div class="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded flex items-center gap-1 mt-0.5">
+                                            <i class="ph-fill ph-warning text-amber-600"></i>
+                                            <span>לא מסתדר עם: <strong>${escapeHtml(b.incompatibleWith.join(', '))}</strong></span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                       </div>`
+                    : `<p class="text-xs text-slate-400 mt-1">החלון פנוי לגמרי — היו הראשונים לשריין חצי שעה!</p>`;
+
+                return `
+                    <div class="p-3.5 rounded-2xl border ${cardBorder} hover:border-emerald-400 transition-all">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-bold text-sm text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs" dir="ltr">
+                                    ${slot.label}
+                                </span>
+                                ${statusBadge}
+                                <span class="text-xs font-semibold ${hasDogs ? 'text-emerald-700' : 'text-slate-500'}">
+                                    ${hasDogs ? `${slotBookings.length} כלבים רשומים` : 'פנוי'}
+                                </span>
+                            </div>
+                            <button onclick="openBookingModal('${slot.id}')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 shrink-0">
+                                <i class="ph-bold ph-plus"></i>
+                                <span>הצטרפות לחלון</span>
+                            </button>
+                        </div>
+                        ${dogsHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openBookingModal(slotId) {
+            document.getElementById('booking-slot-id').value = slotId;
+            document.getElementById('modal-slot-title').textContent = slotId;
+            document.getElementById('booking-form').reset();
+            document.getElementById('conflict-warning-box').classList.add('hidden');
+
+            const slotBookings = bookings.filter(b => b.slot === slotId);
+            const existingBox = document.getElementById('modal-existing-dogs');
+
+            if (slotBookings.length === 0) {
+                existingBox.innerHTML = `<span class="text-emerald-700 font-medium">✨ חלון זה פנוי כרגע לחלוטין.</span>`;
+            } else {
+                existingBox.innerHTML = `
+                    <div class="font-bold text-slate-700 mb-1">כבר רשומים בחלון זה (${slotBookings.length}):</div>
+                    <ul class="space-y-1 text-slate-600">
+                        ${slotBookings.map(b => {
+                            const incText = (b.incompatibleWith && b.incompatibleWith.length > 0) 
+                                ? ` <span class="text-amber-700 font-semibold">(לא מסתדר עם: ${escapeHtml(b.incompatibleWith.join(', '))})</span>` 
+                                : '';
+                            return `<li>• <strong>${escapeHtml(b.dogName)}</strong> (${escapeHtml(b.temperament)})${incText}</li>`;
+                        }).join('')}
+                    </ul>
+                `;
+            }
+
+            const modal = document.getElementById('booking-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function findSlotConflicts(slotId, newDogName, newIncompatibleList) {
+            const slotBookings = bookings.filter(b => b.slot === slotId);
+            const cleanNewDog = newDogName.trim().toLowerCase();
+            const cleanNewInc = newIncompatibleList.map(name => name.trim().toLowerCase()).filter(Boolean);
+
+            const conflicts = [];
+
+            slotBookings.forEach(existing => {
+                const cleanExistingDog = existing.dogName.trim().toLowerCase();
+                const cleanExistingInc = (existing.incompatibleWith || []).map(name => name.trim().toLowerCase()).filter(Boolean);
+
+                const matchInNewList = cleanNewInc.includes(cleanExistingDog);
+                const matchInExistingList = cleanNewDog && cleanExistingInc.includes(cleanNewDog);
+
+                if (matchInNewList || matchInExistingList) {
+                    conflicts.push(existing.dogName);
+                }
+            });
+
+            return [...new Set(conflicts)];
+        }
+
+        function checkLiveConflicts() {
+            const slotId = document.getElementById('booking-slot-id').value;
+            const dogName = document.getElementById('input-dog-name').value;
+            const incRaw = document.getElementById('input-incompatible').value;
+            const incList = incRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+            const conflicts = findSlotConflicts(slotId, dogName, incList);
+            const warningBox = document.getElementById('conflict-warning-box');
+            const warningText = document.getElementById('conflict-warning-text');
+
+            if (conflicts.length > 0) {
+                const displayDog = dogName.trim() || 'הכלב שלך';
+                warningText.innerHTML = `בחלון <strong>${slotId}</strong> רשום כרגע <strong>${escapeHtml(conflicts.join(', '))}</strong> שצוין כלא מסתדר עם <strong>${escapeHtml(displayDog)}</strong>. מומלץ לבחור בחלון החצי שעה הבא כדי למנוע מפגש לא נעים!`;
+                warningBox.classList.remove('hidden');
+            } else {
+                warningBox.classList.add('hidden');
+            }
+        }
+
+        async function submitBooking(e) {
+            e.preventDefault();
+
+            const slotId = document.getElementById('booking-slot-id').value;
+            const dogName = document.getElementById('input-dog-name').value.trim();
+            const ownerName = document.getElementById('input-owner-name').value.trim();
+            const temperament = document.getElementById('input-temperament').value;
+            const incRaw = document.getElementById('input-incompatible').value;
+            const incompatibleWith = incRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+            const conflicts = findSlotConflicts(slotId, dogName, incompatibleWith);
+            if (conflicts.length > 0) {
+                checkLiveConflicts();
+                showToast(`לא ניתן לשבץ: קיימת התנגשות עם ${conflicts.join(', ')} בחלון זה`, 'info');
+                return;
+            }
+
+            const newBooking = {
+                id: 'bk-' + Date.now(),
+                slot: slotId,
+                dogName,
+                ownerName,
+                temperament,
+                incompatibleWith
+            };
+
+            const submitBtn = document.getElementById('submit-booking-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<span>שומר שיבוץ...</span>`;
+
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                try {
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addBooking',
+                        id: newBooking.id,
+                        slot: newBooking.slot,
+                        dogName: newBooking.dogName,
+                        ownerName: newBooking.ownerName,
+                        temperament: newBooking.temperament,
+                        incompatibleWith: incompatibleWith.join(', ')
+                    });
+                    if (data && data.status === 'success' && Array.isArray(data.bookings)) {
+                        bookings = data.bookings;
+                    } else {
+                        bookings.push(newBooking);
+                    }
+                    renderLiveStatusTable();
+                    renderSlots();
+                    closeBookingModal();
+                    showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} וסונכרן ל-Google Sheets 🐾`, 'success');
+                } catch (err) {
+                    console.error('Error saving to Google Sheets:', err);
+                    showToast('שגיאה בשמירה ל-Google Sheets: ' + err.message, 'info');
+                }
+            } else {
+                bookings.push(newBooking);
+                const todayKey = 'adi_dogs_bookings_v2_' + new Date().toISOString().slice(0, 10);
+                localStorage.setItem(todayKey, JSON.stringify(bookings));
+                renderLiveStatusTable();
+                renderSlots();
+                closeBookingModal();
+                showToast(`מעולה! ${dogName} שובץ לחלון ${slotId} (מצב תצוגה מקדימה) 🐾`, 'success');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="ph-bold ph-check-circle text-lg"></i><span>שריין חלון של חצי שעה</span>`;
+        }
+
+        // =========================================================================
+        // לוגיקה ורינדור עבור מאגר הדוג-וולקרים ובקשות שמירה לחופשה
+        // =========================================================================
+        function formatHebrewDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function renderWalkersAndRequests() {
+            const walkersContainer = document.getElementById('walkers-list');
+            const reqContainer = document.getElementById('care-requests-list');
+
+            if (dogWalkers.length === 0) {
+                walkersContainer.innerHTML = `
+                    <div class="text-center py-8 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-xs text-slate-500">
+                        טרם נרשמו דוג-וולקרים במאגר. לחצו על <strong>"הרשמה כדוג-וולקר"</strong> כדי להופיע ראשונים!
+                    </div>
+                `;
+            } else {
+                walkersContainer.innerHTML = dogWalkers.map(w => {
+                    const cleanPhone = String(w.phone || '').replace(/[^0-9+]/g, '');
+                    const waPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
+                    return `
+                        <div class="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-200/80 hover:border-emerald-400 transition-all space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-base">${escapeHtml(w.name)}</h4>
+                                    <span class="inline-block text-[11px] font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full mt-0.5">
+                                        ${escapeHtml(w.service)}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <a href="tel:${escapeHtml(cleanPhone)}" class="bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1 shadow-2xs" dir="ltr">
+                                        <i class="ph-fill ph-phone text-emerald-600"></i>
+                                        <span>${escapeHtml(w.phone)}</span>
+                                    </a>
+                                    <a href="https://wa.me/${escapeHtml(waPhone)}" target="_blank" rel="noopener noreferrer" title="שליחת הודעת ווטסאפ" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white p-2 rounded-xl shadow-2xs flex items-center justify-center">
+                                        <i class="ph-fill ph-whatsapp-logo text-base"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(w.availability)}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (careRequests.length === 0) {
+                reqContainer.innerHTML = `
+                    <div class="text-center py-8 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-xs text-slate-500">
+                        אין כרגע בקשות פתוחות לשמירה. יוצאים לחופשה? לחצו על <strong>"בקשת סידור"</strong>.
+                    </div>
+                `;
+            } else {
+                reqContainer.innerHTML = careRequests.map(req => {
+                    const cleanPhone = String(req.phone || '').replace(/[^0-9+]/g, '');
+                    const waPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
+                    const dateRange = `${formatHebrewDate(req.startDate)} – ${formatHebrewDate(req.endDate)}`;
+                    const hasOffers = req.offers && req.offers.trim() !== '';
+
+                    return `
+                        <div class="p-4 rounded-2xl bg-orange-50/40 border border-orange-200/80 hover:border-orange-400 transition-all space-y-2.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="inline-flex items-center gap-1.5 bg-orange-100 text-orange-900 text-xs font-bold px-3 py-1 rounded-full">
+                                    <i class="ph-bold ph-calendar-blank"></i>
+                                    <span>תאריכים: ${escapeHtml(dateRange)}</span>
+                                </span>
+                                <div class="flex items-center gap-1.5">
+                                    <a href="tel:${escapeHtml(cleanPhone)}" class="bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-xl flex items-center gap-1" dir="ltr">
+                                        <i class="ph-fill ph-phone text-orange-600"></i>
+                                        <span>${escapeHtml(req.phone)}</span>
+                                    </a>
+                                    <a href="https://wa.me/${escapeHtml(waPhone)}" target="_blank" rel="noopener noreferrer" title="פנייה בווטסאפ" class="bg-brand-whatsapp hover:bg-brand-whatsappDark text-white p-2 rounded-xl flex items-center justify-center">
+                                        <i class="ph-fill ph-whatsapp-logo text-base"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            ${req.note ? `<p class="text-xs text-slate-700">${escapeHtml(req.note)}</p>` : ''}
+
+                            <div class="pt-1 flex flex-wrap items-center justify-between gap-2 border-t border-orange-200/50">
+                                <div class="text-[11px] text-slate-600">
+                                    ${hasOffers
+                                        ? `<span class="text-emerald-700 font-semibold">✋ הציעו עזרה: ${escapeHtml(req.offers)}</span>`
+                                        : `<span>ממתין להצעות עזרה מתושבי עדי</span>`}
+                                </div>
+                                <button onclick="openOfferHelpModal('${escapeHtml(req.id)}')" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-colors">
+                                    אני יכול/ה לשמור 🐾
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function openWalkerModal() {
+            document.getElementById('walker-form').reset();
+            const modal = document.getElementById('walker-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeWalkerModal() {
+            const modal = document.getElementById('walker-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitWalkerRegistration(e) {
+            e.preventDefault();
+            const newWalker = {
+                type: 'walker',
+                id: 'w-' + Date.now(),
+                name: document.getElementById('walker-name').value.trim(),
+                phone: document.getElementById('walker-phone').value.trim(),
+                service: document.getElementById('walker-service').value,
+                availability: document.getElementById('walker-availability').value.trim()
+            };
+
+            const btn = document.getElementById('submit-walker-btn');
+            btn.disabled = true;
+
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                try {
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addWalker',
+                        id: newWalker.id,
+                        name: newWalker.name,
+                        phone: newWalker.phone,
+                        service: newWalker.service,
+                        availability: newWalker.availability
+                    });
+                    if (data && data.status === 'success' && Array.isArray(data.walkers)) {
+                        dogWalkers = data.walkers;
+                    } else {
+                        dogWalkers.unshift(newWalker);
+                    }
+                    renderWalkersAndRequests();
+                    closeWalkerModal();
+                    showToast('נרשמת בהצלחה למאגר הדוג-וולקרים של עדי! 🐾', 'success');
+                } catch (err) {
+                    showToast('שגיאה בשמירה לגיליון: ' + err.message, 'info');
+                }
+            } else {
+                dogWalkers.unshift(newWalker);
+                localStorage.setItem('adi_dogs_walkers_v1', JSON.stringify(dogWalkers));
+                renderWalkersAndRequests();
+                closeWalkerModal();
+                showToast('נרשמת למאגר הדוג-וולקרים (מצב הדגמה) 🐾', 'success');
+            }
+            btn.disabled = false;
+        }
+
+        function openCareRequestModal() {
+            document.getElementById('care-request-form').reset();
+            const todayIso = new Date().toISOString().slice(0, 10);
+            document.getElementById('req-start-date').min = todayIso;
+            document.getElementById('req-end-date').min = todayIso;
+            const modal = document.getElementById('care-request-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCareRequestModal() {
+            const modal = document.getElementById('care-request-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitCareRequest(e) {
+            e.preventDefault();
+            const startDate = document.getElementById('req-start-date').value;
+            const endDate = document.getElementById('req-end-date').value;
+
+            if (endDate < startDate) {
+                showToast('תאריך הסיום חייב להיות מאוחר או זהה לתאריך ההתחלה', 'info');
+                return;
+            }
+
+            const newRequest = {
+                type: 'careRequest',
+                id: 'req-' + Date.now(),
+                phone: document.getElementById('req-phone').value.trim(),
+                startDate,
+                endDate,
+                note: document.getElementById('req-note').value.trim(),
+                offers: ''
+            };
+
+            const btn = document.getElementById('submit-req-btn');
+            btn.disabled = true;
+
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                try {
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'addCareRequest',
+                        id: newRequest.id,
+                        phone: newRequest.phone,
+                        startDate: newRequest.startDate,
+                        endDate: newRequest.endDate,
+                        note: newRequest.note
+                    });
+                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
+                        careRequests = data.careRequests;
+                    } else {
+                        careRequests.unshift(newRequest);
+                    }
+                    renderWalkersAndRequests();
+                    closeCareRequestModal();
+                    showToast('בקשת הסידור פורסמה ותסונכרן עם קהילת עדי 🐾', 'success');
+                } catch (err) {
+                    showToast('שגיאה בפרסום הבקשה: ' + err.message, 'info');
+                }
+            } else {
+                careRequests.unshift(newRequest);
+                localStorage.setItem('adi_dogs_care_requests_v1', JSON.stringify(careRequests));
+                renderWalkersAndRequests();
+                closeCareRequestModal();
+                showToast('בקשת הסידור פורסמה (מצב הדגמה) 🐾', 'success');
+            }
+            btn.disabled = false;
+        }
+
+        function openOfferHelpModal(requestId) {
+            const req = careRequests.find(r => r.id === requestId);
+            if (!req) return;
+            document.getElementById('offer-request-id').value = requestId;
+            document.getElementById('offer-helper-name').value = '';
+            document.getElementById('offer-helper-phone').value = '';
+            document.getElementById('offer-target-summary').textContent = `הצעת עזרה לבקשה בתאריכים ${formatHebrewDate(req.startDate)} – ${formatHebrewDate(req.endDate)} (נייד מבקש: ${req.phone})`;
+            const modal = document.getElementById('offer-help-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeOfferHelpModal() {
+            const modal = document.getElementById('offer-help-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitOfferHelp(e) {
+            e.preventDefault();
+            const requestId = document.getElementById('offer-request-id').value;
+            const helperName = document.getElementById('offer-helper-name').value.trim();
+            const helperPhone = document.getElementById('offer-helper-phone').value.trim();
+            const offerText = `${helperName} (${helperPhone})`;
+
+            const req = careRequests.find(r => r.id === requestId);
+            if (req) {
+                req.offers = req.offers ? `${req.offers} | ${offerText}` : offerText;
+            }
+
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                try {
+                    const data = await callGoogleAppsScript(GOOGLE_SCRIPT_URL.trim(), {
+                        action: 'offerHelp',
+                        requestId,
+                        offerText
+                    });
+                    if (data && data.status === 'success' && Array.isArray(data.careRequests)) {
+                        careRequests = data.careRequests;
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            } else {
+                localStorage.setItem('adi_dogs_care_requests_v1', JSON.stringify(careRequests));
+            }
+
+            renderWalkersAndRequests();
+            closeOfferHelpModal();
+            showToast('תודה! הצעתך נוספה לבקשה ומוצגת לבעל הכלב 🐾', 'success');
+        }
+
+        // פתיחה וסגירה של מודאל קוד ה-Apps Script
+        function openScriptModal() {
+            const modal = document.getElementById('script-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeScriptModal() {
+            const modal = document.getElementById('script-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function copyAppsScriptCode() {
+            const codeText = document.getElementById('apps-script-code').innerText;
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = codeText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('קוד ה-Google Apps Script הועתק ללוח!', 'success');
+            } catch (err) {
+                showToast('לא ניתן להעתיק אוטומטית, אנא סמנו והעתיקו ידנית', 'info');
+            }
+            document.body.removeChild(tempTextarea);
+        }
+
+        // מניעת XSS בהצגת קלט משתמשים
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // פתיחה וסגירה של חלונית ההצטרפות לווטסאפ
+        function openJoinModal() {
+            const modal = document.getElementById('join-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeJoinModal() {
+            const modal = document.getElementById('join-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // טיפול בלחיצה על קישור הווטסאפ
+        function handleWhatsAppRedirect(e) {
+            if (WHATSAPP_GROUP_URL.includes('AdiDogsCommunity2026')) {
+                e.preventDefault();
+                closeJoinModal();
+                showToast('מעביר לקבוצת הווטסאפ (החלף את WHATSAPP_GROUP_URL בקוד לקישור האמיתי) 🐶', 'info');
+            } else {
+                closeJoinModal();
+                showToast('מעביר לקבוצת הווטסאפ של גינת הכלבים בעדי... 🐶', 'success');
+            }
+        }
+
+        // העתקת קישור ללוח בצורה תואמת לכל הדפדפנים
+        function copyInviteLink() {
+            const tempInput = document.createElement('input');
+            tempInput.value = WHATSAPP_GROUP_URL;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast('הקישור לקבוצה הועתק! אפשר להדביק ולשתף עם שכנים', 'success');
+            } catch (err) {
+                showToast('לא ניתן להעתיק אוטומטית, אנא העתיקו ידנית', 'info');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        // הצגת הודעת Toast אלגנטית בתחתית המסך
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            if (type === 'success') {
+                iconEl.className = 'ph-fill ph-check-circle text-emerald-400 text-xl';
+            } else {
+                iconEl.className = 'ph-fill ph-info text-amber-400 text-xl';
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        // סגירת מודאל בלחיצה על הרקע הכהה
+        document.getElementById('join-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeJoinModal();
+        });
+        document.getElementById('booking-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeBookingModal();
+        });
+        document.getElementById('script-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeScriptModal();
+        });
+        document.getElementById('walker-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeWalkerModal();
+        });
+        document.getElementById('care-request-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeCareRequestModal();
+        });
+        document.getElementById('offer-help-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeOfferHelpModal();
+        });
+    </script>
+</body>
+</html>
